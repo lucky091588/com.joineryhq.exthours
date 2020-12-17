@@ -89,13 +89,13 @@ function exthours_civicrm_managed(&$entities) {
   _exthours_civix_civicrm_managed($entities);
   $entities[] = array(
     'module' => 'com.joineryhq.exthours',
-    'name' => 'exthoursActivity',
-    'entity' => 'Activity',
+    'name' => 'servicehours',
+    'entity' => 'OptionValue',
     'params' => array(
-      'version' => 4,
+      'version' => 3,
       'label' => 'Service Hours',
       'name' => 'Service Hours',
-      'description' => 'Service Hours for External Hours Tracking',
+      'description' => 'Service Hours for External Hours Tracking extension',
       'option_group_id' => 2,
     ),
   );
