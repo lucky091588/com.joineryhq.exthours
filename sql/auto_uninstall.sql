@@ -17,7 +17,7 @@
 
 SET FOREIGN_KEY_CHECKS=0;
 
-DROP TABLE IF EXISTS `civicrm_project_contact`;
-DROP TABLE IF EXISTS `civicrm_entry_activity`;
+DROP TABLE IF EXISTS `civicrm_exthours_project_contact`;
+DROP TABLE IF EXISTS `civicrm_exthours_entry_activity`;
 
 SET FOREIGN_KEY_CHECKS=1;

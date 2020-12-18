@@ -477,12 +477,12 @@ function _exthours_civix_civicrm_entityTypes(&$entityTypes) {
     'CRM_Exthours_DAO_entryActivity' => [
       'name' => 'EntryActivity',
       'class' => 'CRM_Exthours_DAO_entryActivity',
-      'table' => 'civicrm_entry_activity',
+      'table' => 'civicrm_exthours_entry_activity',
     ],
     'CRM_Exthours_DAO_projectContact' => [
       'name' => 'ProjectContact',
       'class' => 'CRM_Exthours_DAO_projectContact',
-      'table' => 'civicrm_project_contact',
+      'table' => 'civicrm_exthours_project_contact',
     ],
   ]);
 }

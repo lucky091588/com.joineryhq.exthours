@@ -3,7 +3,7 @@
 <table>
   <base>CRM/Exthours</base>
   <class>EntryActivity</class>
-  <name>civicrm_entry_activity</name>
+  <name>civicrm_exthours_entry_activity</name>
   <comment>FIXME</comment>
   <log>true</log>
 

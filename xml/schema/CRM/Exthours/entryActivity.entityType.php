@@ -5,6 +5,6 @@ return [
   [
     'name' => 'EntryActivity',
     'class' => 'CRM_Exthours_DAO_entryActivity',
-    'table' => 'civicrm_entry_activity',
+    'table' => 'civicrm_exthours_entry_activity',
   ],
 ];

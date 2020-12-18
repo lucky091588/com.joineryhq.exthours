@@ -30,8 +30,8 @@
 
 SET FOREIGN_KEY_CHECKS=0;
 
-DROP TABLE IF EXISTS `civicrm_project_contact`;
-DROP TABLE IF EXISTS `civicrm_entry_activity`;
+DROP TABLE IF EXISTS `civicrm_exthours_project_contact`;
+DROP TABLE IF EXISTS `civicrm_exthours_entry_activity`;
 
 SET FOREIGN_KEY_CHECKS=1;
 -- /*******************************************************
@@ -42,12 +42,12 @@ SET FOREIGN_KEY_CHECKS=1;
 
 -- /*******************************************************
 -- *
--- * civicrm_entry_activity
+-- * civicrm_exthours_entry_activity
 -- *
 -- * FIXME
 -- *
 -- *******************************************************/
-CREATE TABLE `civicrm_entry_activity` (
+CREATE TABLE `civicrm_exthours_entry_activity` (
 
 
      `id` int unsigned NOT NULL AUTO_INCREMENT  COMMENT 'Unique EntryActivity ID',
@@ -57,17 +57,17 @@ CREATE TABLE `civicrm_entry_activity` (
         PRIMARY KEY (`id`)
  
  
-,          CONSTRAINT FK_civicrm_entry_activity_activity_id FOREIGN KEY (`activity_id`) REFERENCES `civicrm_activity`(`id`) ON DELETE CASCADE  
+,          CONSTRAINT FK_civicrm_exthours_entry_activity_activity_id FOREIGN KEY (`activity_id`) REFERENCES `civicrm_activity`(`id`) ON DELETE CASCADE  
 )    ;
 
 -- /*******************************************************
 -- *
--- * civicrm_project_contact
+-- * civicrm_exthours_project_contact
 -- *
 -- * FIXME
 -- *
 -- *******************************************************/
-CREATE TABLE `civicrm_project_contact` (
+CREATE TABLE `civicrm_exthours_project_contact` (
 
 
      `id` int unsigned NOT NULL AUTO_INCREMENT  COMMENT 'Unique ProjectContact ID',
@@ -77,7 +77,7 @@ CREATE TABLE `civicrm_project_contact` (
         PRIMARY KEY (`id`)
  
  
-,          CONSTRAINT FK_civicrm_project_contact_contact_id FOREIGN KEY (`contact_id`) REFERENCES `civicrm_contact`(`id`) ON DELETE CASCADE  
+,          CONSTRAINT FK_civicrm_exthours_project_contact_contact_id FOREIGN KEY (`contact_id`) REFERENCES `civicrm_contact`(`id`) ON DELETE CASCADE  
 )    ;
 
  

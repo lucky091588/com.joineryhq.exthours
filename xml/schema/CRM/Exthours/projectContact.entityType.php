@@ -5,6 +5,6 @@ return [
   [
     'name' => 'ProjectContact',
     'class' => 'CRM_Exthours_DAO_projectContact',
-    'table' => 'civicrm_project_contact',
+    'table' => 'civicrm_exthours_project_contact',
   ],
 ];
