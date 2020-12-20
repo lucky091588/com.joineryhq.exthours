@@ -167,18 +167,76 @@ function exthours_civicrm_themes(&$themes) {
 //}
 
 /**
+ * Implements hook_civicrm_pageRun().
+ *
+ * @link https://docs.civicrm.org/dev/en/latest/hooks/hook_civicrm_pageRun
+ */
+function exthours_civicrm_pageRun(&$page) {
+  $pageName = $page->getVar('_name');
+
+  // $meowk = CRM_Exthours_Utils::getKimaiTimeSheet();
+  // echo "<pre>";
+  // print_r($meowk);
+  // echo "</pre>";
+}
+
+/**
  * Implements hook_civicrm_navigationMenu().
  *
  * @link https://docs.civicrm.org/dev/en/latest/hooks/hook_civicrm_navigationMenu
  */
-//function exthours_civicrm_navigationMenu(&$menu) {
-//  _exthours_civix_insert_navigation_menu($menu, 'Mailings', array(
-//    'label' => E::ts('New subliminal message'),
-//    'name' => 'mailing_subliminal_message',
-//    'url' => 'civicrm/mailing/subliminal',
-//    'permission' => 'access CiviMail',
-//    'operator' => 'OR',
-//    'separator' => 0,
-//  ));
-//  _exthours_civix_navigationMenu($menu);
-//}
+function exthours_civicrm_navigationMenu(&$menu) {
+ $pages = array(
+    'admin_page' => array(
+      'label'      => E::ts('External Hours'),
+      'name'       => 'External Hours',
+      'url'        => 'civicrm/admin/exthours/settings?reset=1',
+      'parent' => array('Administer', 'Customize Data and Screens'),
+      'permission' => 'access CiviCRM',
+    ),
+  );
+
+  foreach ($pages as $item) {
+    // Check that our item doesn't already exist.
+    $menu_item_search = array('url' => $item['url']);
+    $menu_items = array();
+    CRM_Core_BAO_Navigation::retrieve($menu_item_search, $menu_items);
+    if (empty($menu_items)) {
+      // Now we're sure it doesn't exist; add it to the menu.
+      $path = implode('/', $item['parent']);
+      unset($item['parent']);
+      _exthours_civix_insert_navigation_menu($menu, $path, $item);
+    }
+  }
+}
+
+
+/**
+ * Log CiviCRM API errors to CiviCRM log.
+ */
+function _exthours_log_api_error(API_Exception $e, string $entity, string $action, array $params) {
+  $message = "CiviCRM API Error '{$entity}.{$action}': " . $e->getMessage() . '; ';
+  $message .= "API parameters when this error happened: " . json_encode($params) . '; ';
+  $bt = debug_backtrace();
+  $error_location = "{$bt[1]['file']}::{$bt[1]['line']}";
+  $message .= "Error API called from: $error_location";
+  CRM_Core_Error::debug_log_message($message);
+}
+
+/**
+ * CiviCRM API wrapper. Wraps with try/catch, redirects errors to log, saves
+ * typing.
+ */
+function _exthours_civicrmapi(string $entity, string $action, array $params, bool $silence_errors = TRUE) {
+  try {
+    $result = civicrm_api3($entity, $action, $params);
+  }
+  catch (API_Exception $e) {
+    _exthours_log_api_error($e, $entity, $action, $params);
+    if (!$silence_errors) {
+      throw $e;
+    }
+  }
+
+  return $result;
+}
