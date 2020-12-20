@@ -1,17 +1,17 @@
 <?php
 use CRM_Exthours_ExtensionUtil as E;
 
-class CRM_Exthours_BAO_projectContact extends CRM_Exthours_DAO_projectContact {
+class CRM_Exthours_BAO_EntryActivity extends CRM_Exthours_DAO_EntryActivity {
 
   /**
-   * Create a new ProjectContact based on array-data
+   * Create a new EntryActivity based on array-data
    *
    * @param array $params key-value pairs
-   * @return CRM_Exthours_DAO_projectContact|NULL
+   * @return CRM_Exthours_DAO_EntryActivity|NULL
    *
   public static function create($params) {
-    $className = 'CRM_Exthours_DAO_projectContact';
-    $entityName = 'ProjectContact';
+    $className = 'CRM_Exthours_DAO_EntryActivity';
+    $entityName = 'EntryActivity';
     $hook = empty($params['id']) ? 'create' : 'edit';
 
     CRM_Utils_Hook::pre($hook, $entityName, CRM_Utils_Array::value('id', $params), $params);

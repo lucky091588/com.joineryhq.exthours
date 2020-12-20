@@ -4,7 +4,7 @@
 return [
   [
     'name' => 'EntryActivity',
-    'class' => 'CRM_Exthours_DAO_entryActivity',
+    'class' => 'CRM_Exthours_DAO_EntryActivity',
     'table' => 'civicrm_exthours_entry_activity',
   ],
 ];

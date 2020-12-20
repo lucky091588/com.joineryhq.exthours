@@ -474,14 +474,14 @@ function _exthours_civix_civicrm_alterSettingsFolders(&$metaDataFolders = NULL) 
  */
 function _exthours_civix_civicrm_entityTypes(&$entityTypes) {
   $entityTypes = array_merge($entityTypes, [
-    'CRM_Exthours_DAO_entryActivity' => [
+    'CRM_Exthours_DAO_EntryActivity' => [
       'name' => 'EntryActivity',
-      'class' => 'CRM_Exthours_DAO_entryActivity',
+      'class' => 'CRM_Exthours_DAO_EntryActivity',
       'table' => 'civicrm_exthours_entry_activity',
     ],
-    'CRM_Exthours_DAO_projectContact' => [
+    'CRM_Exthours_DAO_ProjectContact' => [
       'name' => 'ProjectContact',
-      'class' => 'CRM_Exthours_DAO_projectContact',
+      'class' => 'CRM_Exthours_DAO_ProjectContact',
       'table' => 'civicrm_exthours_project_contact',
     ],
   ]);
