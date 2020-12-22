@@ -174,7 +174,7 @@ function exthours_civicrm_themes(&$themes) {
 function exthours_civicrm_pageRun(&$page) {
   $pageName = $page->getVar('_name');
 
-  // $meowk = CRM_Exthours_Utils::getKimaiTimeSheet();
+  // $meowk = CRM_Exthours_Kimai_Utils::getKimaiTimeSheet();
   // echo "<pre>";
   // print_r($meowk);
   // echo "</pre>";

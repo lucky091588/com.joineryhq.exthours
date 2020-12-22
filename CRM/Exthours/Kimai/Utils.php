@@ -4,7 +4,7 @@
  * Settings-related utility methods.
  * @link https://www.kimai.org/v1/api.html
  */
-class CRM_Exthours_Utils {
+class CRM_Exthours_Kimai_Utils {
 
   /**
    * Kimai Authenticate Setup Access to get API Key
@@ -14,8 +14,6 @@ class CRM_Exthours_Utils {
    * @return array for kimai api key request result.
    */
   public static function kimaiAuthAPIKey($username, $password) {
-    $path = Civi::settings()->get('exthours_kimai_url');
-
     // Kimai authenticate method array
     $kimaiAuth = array(
       "method" => "authenticate",
@@ -27,13 +25,8 @@ class CRM_Exthours_Utils {
       "jsonrpc" => "2.0",
     );
 
-    // Add trailing slash to URL
-    if (substr($path, -1) !== '/') {
-      $path .= '/';
-    }
-
     // API Request
-    $request = CRM_Exthours_ExthoursApi::request($path, $kimaiAuth, 'POST');
+    $request = CRM_Exthours_Kimai_Api::request($kimaiAuth, 'POST');
 
     return $request['result'];
   }
@@ -44,7 +37,6 @@ class CRM_Exthours_Utils {
    * @return array of kimai timesheet data.
    */
   public static function getKimaiTimesheet() {
-    $path = Civi::settings()->get('exthours_kimai_url');
     $apiKey = Civi::settings()->get('exthours_kimai_api_key');
 
     // Kimai Get Timesheet Method
@@ -57,13 +49,8 @@ class CRM_Exthours_Utils {
       "jsonrpc" => "2.0",
     );
 
-    // Add trailing slash to URL
-    if (substr($path, -1) !== '/') {
-      $path .= '/';
-    }
-
     // API Request
-    $request = CRM_Exthours_ExthoursApi::request($path, $kimaiAuth, 'POST');
+    $request = CRM_Exthours_Kimai_Api::request($kimaiAuth, 'POST');
 
     return $request['result'];
   }
