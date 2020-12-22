@@ -12,4 +12,10 @@
     <title>Setup</title>
     <access_arguments>access CiviCRM</access_arguments>
   </item>
+  <item>
+    <path>civicrm/admin/exthours/projects</path>
+    <page_callback>CRM_Exthours_Page_Projects</page_callback>
+    <title>Projects</title>
+    <access_arguments>access CiviCRM</access_arguments>
+  </item>
 </menu>

@@ -55,4 +55,28 @@ class CRM_Exthours_Kimai_Utils {
     return $request['result'];
   }
 
+  /**
+   * Get Kimai Projects
+   *
+   * @return array of kimai projects data.
+   */
+  public static function getKimaiProjects() {
+    $apiKey = Civi::settings()->get('exthours_kimai_api_key');
+
+    // Kimai Get Timesheet Method
+    $kimaiAuth = array(
+      "method" => "getProjects",
+      "params" => array(
+        "apiKey" => $apiKey,
+      ),
+      "id" => "1",
+      "jsonrpc" => "2.0",
+    );
+
+    // API Request
+    $request = CRM_Exthours_Kimai_Api::request($kimaiAuth, 'POST');
+
+    return $request['result'];
+  }
+
 }
