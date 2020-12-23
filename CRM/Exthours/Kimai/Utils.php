@@ -79,4 +79,39 @@ class CRM_Exthours_Kimai_Utils {
     return $request['result'];
   }
 
+  /**
+   * Get Kimai Project Name
+   * @param Int $projectId kimai project id
+   *
+   * @return kimai project name.
+   */
+  public static function getKimaiProjectName($projectId) {
+    $projects = self::getKimaiProjects();
+    $projectName = '';
+
+    foreach ($projects['items'] as $project) {
+      if ($project['projectID'] == $projectId) {
+        $projectName = $project['name'];
+      }
+    }
+
+    return $projectName;
+  }
+
+  /**
+   * Get Organization Name
+   * @param Int $organizationId kimai project id
+   *
+   * @return organization name.
+   */
+  public static function getOrganizationName($organizationId) {
+    $organization = \Civi\Api4\Contact::get()
+      ->addWhere('id', '=', $organizationId)
+      ->addWhere('contact_type', '=', 'Organization')
+      ->execute()
+      ->first();
+
+    return $organization['display_name'];
+  }
+
 }

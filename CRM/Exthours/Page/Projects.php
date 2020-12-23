@@ -22,16 +22,10 @@ class CRM_Exthours_Page_Projects extends CRM_Core_Page {
     if (!(self::$_links)) {
       self::$_links = [
         CRM_Core_Action::UPDATE => [
-          'name' => E::ts('Update'),
+          'name' => E::ts('View and Edit Project'),
           'url' => 'civicrm/admin/exthours/projects',
           'qs' => 'reset=1&action=update&id=%%id%%',
-          'title' => E::ts('Edit Project'),
-        ],
-        CRM_Core_Action::ADD => [
-          'name' => E::ts('ADD'),
-          'url' => 'civicrm/admin/exthours/projects',
-          'qs' => 'reset=1&action=add',
-          'title' => E::ts('Add Project'),
+          'title' => E::ts('Update Project'),
         ],
         CRM_Core_Action::DELETE => [
           'name' => E::ts('Delete'),
@@ -101,9 +95,26 @@ class CRM_Exthours_Page_Projects extends CRM_Core_Page {
    * @return void
    */
   public function browse($action = NULL) {
-    $row = [];
+    $projects = [];
 
-    $this->assign('rows', $row);
+    $projectContacts = \Civi\Api4\ProjectContact::get()
+      ->execute();
+    foreach ($projectContacts as $projectContact) {
+      $id = $projectContact['id'];
+      $projects[$id]['id'] = $projectContact['id'];
+      $projects[$id]['name'] = CRM_Exthours_Kimai_Utils::getKimaiProjectName($projectContact['external_id']);
+      $projects[$id]['orgName'] = CRM_Exthours_Kimai_Utils::getOrganizationName($projectContact['contact_id']);
+      $projects[$id]['action'] = CRM_Core_Action::formLink(self::links(), $action,
+        ['id' => $id],
+        E::ts('more'),
+        FALSE,
+        'project.row.actions',
+        'project',
+        $id
+      );
+    }
+
+    $this->assign('rows', $projects);
   }
 
 }

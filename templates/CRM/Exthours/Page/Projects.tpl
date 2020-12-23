@@ -5,7 +5,32 @@
 {else}
   <div class="crm-content-block crm-block">
     {if $rows}
-
+      <div class="crm-content-block crm-block">
+         {strip}
+          {* handle enable/disable actions*}
+          {include file="CRM/common/enableDisableApi.tpl"}
+          <table id="options" class="row-highlight">
+              <thead>
+                <tr>
+                  <th>{ts}ID{/ts}</th>
+                  <th>{ts}Kimai Project Name{/ts}</th>
+                  <th>{ts}CiviCRM Organization Name{/ts}</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+            {foreach from=$rows item=row}
+              <tr id="TokenDefaultSet-{$row.id}" data-action="setvalue" class="crm-entity {cycle values="odd-row,even-row"}">
+                <td>{$row.id}</td>
+                <td>{$row.name}</td>
+                <td>{$row.orgName}</td>
+                <td>{$row.action|replace:'xx':$row.id}</td>
+              </tr>
+            {/foreach}
+            </tbody>
+          </table>
+          {/strip}
+        </div>
     {else}
        {if $action ne 1} {* When we are adding an item, we should not display this message *}
          <div class="messages status no-popup">

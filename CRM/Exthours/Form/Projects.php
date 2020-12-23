@@ -9,6 +9,21 @@ use CRM_Exthours_ExtensionUtil as E;
  */
 class CRM_Exthours_Form_Projects extends CRM_Core_Form {
 
+  /**
+   * System ID for Project Contact being edited.
+   * @var int
+   */
+  private $_id;
+
+  /**
+   * Pre-process
+   */
+  public function preProcess() {
+    $this->_id = CRM_Utils_Request::retrieve('id', 'Positive',
+      $this, FALSE, 0
+    );
+  }
+
   public function buildQuickForm() {
     $contactOrganization = [];
     $projects = [];
@@ -32,7 +47,7 @@ class CRM_Exthours_Form_Projects extends CRM_Core_Form {
     sort($projects);
 
     $this->add('text',
-      'kimai_projects',
+      'kimai_project_id',
       E::ts('Kimai Projects'),
       [
         'class' => 'crm-projects-selector big',
@@ -41,7 +56,7 @@ class CRM_Exthours_Form_Projects extends CRM_Core_Form {
     );
 
     $this->add('text',
-      'civicrm_organization',
+      'civicrm_organization_id',
       E::ts('CiviCRM Organization'),
       [
         'class' => 'crm-organization-selector big',
@@ -70,6 +85,26 @@ class CRM_Exthours_Form_Projects extends CRM_Core_Form {
   }
 
   /**
+   * Set default values.
+   *
+   * @return array
+   */
+  public function setDefaultValues() {
+    $defaults = parent::setDefaultValues();
+
+    if ($this->_id) {
+      $projectContact = \Civi\Api4\ProjectContact::get()
+        ->addWhere('id', '=', $this->_id)
+        ->execute()
+        ->first();
+      $defaults['kimai_project_id'] = $projectContact['external_id'];
+      $defaults['civicrm_organization_id'] = $projectContact['contact_id'];
+    }
+
+    return $defaults;
+  }
+
+  /**
    * Global validation rules for the form.
    *
    * @param array $values
@@ -80,6 +115,7 @@ class CRM_Exthours_Form_Projects extends CRM_Core_Form {
    */
   public function formRule($values) {
     $errors = [];
+
     return $errors;
   }
 
@@ -88,6 +124,14 @@ class CRM_Exthours_Form_Projects extends CRM_Core_Form {
    */
   public function postProcess() {
     $values = $this->exportValues();
+
+    $results = \Civi\Api4\ProjectContact::create()
+      ->addValue('external_id', $values['kimai_project_id'])
+      ->addValue('contact_id', $values['civicrm_organization_id'])
+      ->execute();
+
+    CRM_Core_Session::setStatus(E::ts('A new project has been integrated!'), E::ts('Kimai Integration: Project'), 'success');
+
     parent::postProcess();
   }
 
