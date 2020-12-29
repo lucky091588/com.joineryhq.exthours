@@ -1,7 +1,7 @@
 {if $action eq 1 or $action eq 2}
   {include file="CRM/Exthours/Form/Projects.tpl"}
 {elseif $action eq 8}
-
+  {include file="CRM/Exthours/Form/ProjectDelete.tpl"}
 {else}
   <div class="crm-content-block crm-block">
     {if $rows}

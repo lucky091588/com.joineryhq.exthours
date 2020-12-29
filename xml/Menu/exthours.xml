@@ -18,4 +18,10 @@
     <title>Projects</title>
     <access_arguments>access CiviCRM</access_arguments>
   </item>
+  <item>
+    <path>civicrm/admin/exthours/projects/delete</path>
+    <page_callback>CRM_Exthours_Form_ProjectDelete</page_callback>
+    <title>ProjectDelete</title>
+    <access_arguments>access CiviCRM</access_arguments>
+  </item>
 </menu>
