@@ -64,6 +64,13 @@ class CRM_Exthours_Form_Projects extends CRM_Core_Form {
       TRUE
     );
 
+    // Add hidden text for the exthours_project_id (for the formRule)
+    if ($this->_id) {
+      $this->add('hidden',
+        'exthours_project_id'
+      );
+    }
+
     $this->addButtons(array(
       array(
         'type' => 'submit',
@@ -97,6 +104,7 @@ class CRM_Exthours_Form_Projects extends CRM_Core_Form {
         ->addWhere('id', '=', $this->_id)
         ->execute()
         ->first();
+      $defaults['exthours_project_id'] = $this->_id;
       $defaults['kimai_project_id'] = $projectContact['external_id'];
       $defaults['civicrm_organization_id'] = $projectContact['contact_id'];
     }
@@ -116,6 +124,30 @@ class CRM_Exthours_Form_Projects extends CRM_Core_Form {
   public function formRule($values) {
     $errors = [];
 
+    $getProjectID = \Civi\Api4\ProjectContact::get()
+      ->addWhere('external_id', '=', $values['kimai_project_id']);
+
+    $getOrganizationID = \Civi\Api4\ProjectContact::get()
+      ->addWhere('contact_id', '=', $values['civicrm_organization_id']);
+
+    // Since there is an error if I use $this->_id in this formRule function (which I didn't manage to fix),
+    // I just created a hidden field for the ID if it's in update form
+    if (isset($values['exthours_project_id'])) {
+      $getProjectID->addWhere('id', '!=', $values['exthours_project_id']);
+      $getOrganizationID->addWhere('id', '!=', $values['exthours_project_id']);
+    }
+
+    $checkProjectID = $getProjectID->execute()->first();
+    $checkOrganizationID = $getOrganizationID->execute()->first();
+
+    if ($checkProjectID) {
+      $errors['kimai_project_id'] = 'This Project is already integrated';
+    }
+
+    if ($checkOrganizationID) {
+      $errors['civicrm_organization_id'] = 'This Organization is already integrated';
+    }
+
     return $errors;
   }
 
@@ -125,12 +157,23 @@ class CRM_Exthours_Form_Projects extends CRM_Core_Form {
   public function postProcess() {
     $values = $this->exportValues();
 
-    $results = \Civi\Api4\ProjectContact::create()
-      ->addValue('external_id', $values['kimai_project_id'])
-      ->addValue('contact_id', $values['civicrm_organization_id'])
-      ->execute();
+    if ($this->_id) {
+      $results = \Civi\Api4\ProjectContact::update()
+        ->addWhere('id', '=', $this->_id)
+        ->addValue('external_id', $values['kimai_project_id'])
+        ->addValue('contact_id', $values['civicrm_organization_id'])
+        ->execute();
 
-    CRM_Core_Session::setStatus(E::ts('A new project has been integrated!'), E::ts('Kimai Integration: Project'), 'success');
+      CRM_Core_Session::setStatus(E::ts('Project has successfully edited!'), E::ts('Kimai Integration: Project'), 'success');
+    } else {
+      $results = \Civi\Api4\ProjectContact::create()
+        ->addValue('external_id', $values['kimai_project_id'])
+        ->addValue('contact_id', $values['civicrm_organization_id'])
+        ->execute();
+
+      CRM_Core_Session::setStatus(E::ts('A new project has been integrated!'), E::ts('Kimai Integration: Project'), 'success');
+    }
+
 
     parent::postProcess();
   }
