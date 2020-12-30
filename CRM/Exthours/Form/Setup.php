@@ -40,29 +40,27 @@ class CRM_Exthours_Form_Setup extends CRM_Core_Form {
       ),
     ));
 
-    $this->addFormRule(['CRM_Exthours_Form_Setup', 'formRule'], $this);
-
     parent::buildQuickForm();
   }
 
   /**
-   * Global validation rules for the form.
-   *
-   * @param array $values
-   *   Posted values of the form.
-   *
-   * @return array
-   *   list of errors to be posted back to the form
+   * Override parent::validate().
    */
-  public function formRule($values) {
-    $errors = [];
+  public function validate() {
+    $error = parent::validate();
+    $values = $this->exportValues();
+
     $request = CRM_Exthours_Kimai_Utils::kimaiAuthAPIKey($values['kimai_username'], $values['kimai_pass']);
     if (!$request['success']) {
-      $errors['kimai_username'] = E::ts('Unknown user or no permissions.');
-      $errors['kimai_pass'] = E::ts('Unknown password or no permissions.');
+      $this->setElementError('kimai_username', E::ts('Unknown user or no permissions.'));
+      $this->setElementError('kimai_pass', E::ts('Unknown password or no permissions.'));
       CRM_Core_Session::setStatus(E::ts('There is an error with the username and password since it fails to connect in Kimai API.'), E::ts('External Hours: Kimai API Key setup'), "error");
     }
-    return $errors;
+    else {
+      $this->set('kimaiRequest', $request);
+    }
+
+    return (0 == count($this->_errors));
   }
 
   /**

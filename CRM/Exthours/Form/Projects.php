@@ -64,13 +64,6 @@ class CRM_Exthours_Form_Projects extends CRM_Core_Form {
       TRUE
     );
 
-    // Add hidden text for the exthours_project_id (for the formRule)
-    if ($this->_id) {
-      $this->add('hidden',
-        'exthours_project_id'
-      );
-    }
-
     $this->addButtons(array(
       array(
         'type' => 'submit',
@@ -85,8 +78,6 @@ class CRM_Exthours_Form_Projects extends CRM_Core_Form {
 
     $this->assign('contactOrganization', $contactOrganization);
     $this->assign('kimaiProjects', $projects);
-
-    $this->addFormRule(['CRM_Exthours_Form_Projects', 'formRule'], $this);
 
     parent::buildQuickForm();
   }
@@ -104,7 +95,6 @@ class CRM_Exthours_Form_Projects extends CRM_Core_Form {
         ->addWhere('id', '=', $this->_id)
         ->execute()
         ->first();
-      $defaults['exthours_project_id'] = $this->_id;
       $defaults['kimai_project_id'] = $projectContact['external_id'];
       $defaults['civicrm_organization_id'] = $projectContact['contact_id'];
     }
@@ -113,42 +103,35 @@ class CRM_Exthours_Form_Projects extends CRM_Core_Form {
   }
 
   /**
-   * Global validation rules for the form.
-   *
-   * @param array $values
-   *   Posted values of the form.
-   *
-   * @return array
-   *   list of errors to be posted back to the form
+   * Override parent::validate().
    */
-  public function formRule($values) {
-    $errors = [];
+  public function validate() {
+    $error = parent::validate();
+    $values = $this->exportValues();
 
-    $getProjectID = \Civi\Api4\ProjectContact::get()
+    $getProjectId = \Civi\Api4\ProjectContact::get()
       ->addWhere('external_id', '=', $values['kimai_project_id']);
-
-    $getOrganizationID = \Civi\Api4\ProjectContact::get()
+    $getOrganizationId = \Civi\Api4\ProjectContact::get()
       ->addWhere('contact_id', '=', $values['civicrm_organization_id']);
 
-    // Since there is an error if I use $this->_id in this formRule function (which I didn't manage to fix),
-    // I just created a hidden field for the ID if it's in update form
-    if (isset($values['exthours_project_id'])) {
-      $getProjectID->addWhere('id', '!=', $values['exthours_project_id']);
-      $getOrganizationID->addWhere('id', '!=', $values['exthours_project_id']);
+    // If edit/update, exclude current ID
+    if ($this->_id) {
+      $getProjectId->addWhere('id', '!=', $this->_id);
+      $getOrganizationId->addWhere('id', '!=', $this->_id);
     }
 
-    $checkProjectID = $getProjectID->execute()->first();
-    $checkOrganizationID = $getOrganizationID->execute()->first();
+    $checkProjectId = $getProjectId->execute()->first();
+    $checkOrganizationId = $getOrganizationId->execute()->first();
 
-    if ($checkProjectID) {
-      $errors['kimai_project_id'] = 'This Project is already integrated';
+    if ($checkProjectId) {
+      $this->setElementError('kimai_project_id', E::ts('This Organization is already integrated'));
     }
 
-    if ($checkOrganizationID) {
-      $errors['civicrm_organization_id'] = 'This Organization is already integrated';
+    if ($checkOrganizationId) {
+      $this->setElementError('civicrm_organization_id', E::ts('This Organization is already integrated'));
     }
 
-    return $errors;
+    return (0 == count($this->_errors));
   }
 
   /**
