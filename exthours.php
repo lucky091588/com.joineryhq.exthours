@@ -186,11 +186,11 @@ function exthours_civicrm_pageRun(&$page) {
  * @link https://docs.civicrm.org/dev/en/latest/hooks/hook_civicrm_navigationMenu
  */
 function exthours_civicrm_navigationMenu(&$menu) {
- $pages = array(
+  $pages = array(
     'admin_page' => array(
-      'label'      => E::ts('External Hours'),
-      'name'       => 'External Hours',
-      'url'        => 'civicrm/admin/exthours/settings?reset=1',
+      'label' => E::ts('External Hours'),
+      'name' => 'External Hours',
+      'url' => 'civicrm/admin/exthours/settings?reset=1',
       'parent' => array('Administer', 'Customize Data and Screens'),
       'permission' => 'access CiviCRM',
     ),
@@ -209,7 +209,6 @@ function exthours_civicrm_navigationMenu(&$menu) {
     }
   }
 }
-
 
 /**
  * Log CiviCRM API errors to CiviCRM log.

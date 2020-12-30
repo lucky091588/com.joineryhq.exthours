@@ -6,10 +6,10 @@ use CRM_Exthours_ExtensionUtil as E;
  * Wrapper around Exthours API.
  */
 class CRM_Exthours_Kimai_Api {
+
   /**
    * Perform an HTTP request.
    *
-   * @param string $path Endpoint
    * @param array $body Optional body for POST and PUT requests. Array, will be
    *    json-encoded before sending.
    *    See: https://www.eventbrite.com/platform/api#/introduction/expansions

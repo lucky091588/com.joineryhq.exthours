@@ -4,14 +4,14 @@ use CRM_Exthours_ExtensionUtil as E;
 class CRM_Exthours_Page_Projects extends CRM_Core_Page {
 
   /**
-   * @inheritDoc
    * @var bool
+   * @inheritDoc
    */
   public $useLivePageJS = TRUE;
 
   /**
-   * @inheritDoc
    * @var string
+   * @inheritDoc
    */
   public static $_links = NULL;
 

@@ -165,7 +165,8 @@ class CRM_Exthours_Form_Projects extends CRM_Core_Form {
         ->execute();
 
       CRM_Core_Session::setStatus(E::ts('Project has successfully edited!'), E::ts('Kimai Integration: Project'), 'success');
-    } else {
+    }
+    else {
       $results = \Civi\Api4\ProjectContact::create()
         ->addValue('external_id', $values['kimai_project_id'])
         ->addValue('contact_id', $values['civicrm_organization_id'])
@@ -173,7 +174,6 @@ class CRM_Exthours_Form_Projects extends CRM_Core_Form {
 
       CRM_Core_Session::setStatus(E::ts('A new project has been integrated!'), E::ts('Kimai Integration: Project'), 'success');
     }
-
 
     parent::postProcess();
   }
