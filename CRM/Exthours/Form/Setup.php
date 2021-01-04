@@ -68,7 +68,7 @@ class CRM_Exthours_Form_Setup extends CRM_Core_Form {
    */
   public function postProcess() {
     $values = $this->exportValues();
-    $request = CRM_Exthours_Kimai_Utils::kimaiAuthAPIKey($values['kimai_username'], $values['kimai_pass']);
+    $request = $this->get('kimaiRequest');
     Civi::settings()->set('exthours_kimai_api_key', $request['items'][0]['apiKey']);
     CRM_Core_Session::setStatus(E::ts('Kimai API Key has successfully setup.'), E::ts('External Hours: Kimai API Key setup'), "success");
     CRM_Utils_System::redirect(CRM_Utils_System::url('civicrm/admin/exthours/settings', 'reset=1'));
