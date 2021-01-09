@@ -16,7 +16,7 @@ class CRM_Exthours_Kimai_Api {
    * @param string $method HTTP verb: GET, POST, etc.
    * @return array
    */
-  public function request($body = array(), $method = 'POST') {
+  public function request($body = array(), $method = 'POST', $pathCall = 'core/json.php') {
 
     $path = Civi::settings()->get('exthours_kimai_url');
 
@@ -40,7 +40,7 @@ class CRM_Exthours_Kimai_Api {
       $options['http']['content'] = json_encode($body);
     }
 
-    $url = $path . 'core/json.php';
+    $url = $path . $pathCall;
 
     $context = stream_context_create($options);
     $result = @file_get_contents($url, TRUE, $context);

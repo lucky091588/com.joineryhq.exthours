@@ -30,4 +30,19 @@ return array(
     'quick_form_type' => 'Element',
     'html_type' => 'Hidden',
   ),
+
+  'exthours_kimai_setup_primed' => array(
+    'group_name' => 'External Hours Settings',
+    'group' => 'exthours',
+    'name' => 'exthours_kimai_setup_primed',
+    'add' => '5.0',
+    'is_domain' => 1,
+    'is_contact' => 0,
+    'description' => '',
+    'title' => E::ts('Kimai Setup Primed'),
+    'type' => 'Boolean',
+    'default' => 0,
+    'quick_form_type' => 'Element',
+    'html_type' => 'Hidden',
+  ),
 );

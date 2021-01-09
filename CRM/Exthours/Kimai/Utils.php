@@ -32,6 +32,35 @@ class CRM_Exthours_Kimai_Utils {
   }
 
   /**
+   * Get Kimai Setup Prime
+   *
+   * @return array
+   */
+  public static function kimaiSetupPrime() {
+    $apiKey = Civi::settings()->get('exthours_kimai_api_key');
+
+    // Kimai database will create the custom table
+    // and additional column for kimai_timesheet table
+    $kimaiAuth = array(
+      "method" => "primeUpdates",
+      "params" => array(
+        "apiKey" => $apiKey,
+      ),
+      "id" => "1",
+      "jsonrpc" => "2.0",
+    );
+
+    // API Request for the primeUpdates
+    $request = CRM_Exthours_Kimai_Api::request($kimaiAuth, 'POST', 'core/civicrm.php');
+
+    if ($request['result']['success']) {
+      Civi::settings()->set('exthours_kimai_setup_primed', TRUE);
+    }
+
+    return $request['result'];
+  }
+
+  /**
    * Get Kimai Timesheet
    *
    * @return array of kimai timesheet data.
