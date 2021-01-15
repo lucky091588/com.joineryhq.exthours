@@ -27,9 +27,13 @@ function _civicrm_api3_ext_hours_Getkimaiupdates_spec(&$spec) {
  */
 function civicrm_api3_ext_hours_Getkimaiupdates($params) {
   if (array_key_exists('kimaiTimeSheets', $params) && $params['kimaiTimeSheets'] == 'updates') {
-    $returnValues = CRM_Exthours_Kimai_Utils::getKimaiUpdates();
+    $returnValues = CRM_Exthours_Kimai_Utils::getKimaiUpdatesData();
     // ALTERNATIVE: $returnValues = []; // OK, success
     // ALTERNATIVE: $returnValues = ["Some value"]; // OK, return a single value
+
+    foreach ($returnValues as $data) {
+      CRM_Exthours_Kimai_Utils::getKimaiUpdate($data['id'], $data['action'], $data);
+    }
 
     // Spec: civicrm_api3_create_success($values = 1, $params = [], $entity = NULL, $action = NULL)
     return civicrm_api3_create_success($returnValues, $params, 'ExtHours', 'Getkimaiupdates');

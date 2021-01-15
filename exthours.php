@@ -174,10 +174,10 @@ function exthours_civicrm_themes(&$themes) {
 function exthours_civicrm_pageRun(&$page) {
   $pageName = $page->getVar('_name');
 
-  $meowk = CRM_Exthours_Kimai_Utils::getKimaiUpdates();
-  echo "<pre>";
-  print_r($meowk);
-  echo "</pre>";
+  // $meowk = CRM_Exthours_Kimai_Utils::getKimaiUpdatesData();
+  // echo "<pre>";
+  // print_r($meowk);
+  // echo "</pre>";
 }
 
 /**

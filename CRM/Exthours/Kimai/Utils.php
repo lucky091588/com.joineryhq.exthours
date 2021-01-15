@@ -144,11 +144,9 @@ class CRM_Exthours_Kimai_Utils {
   }
 
   /**
-   * Get get kimai getUpdates api data
-   *
-   * @return organization name.
+   * Get kimai getUpdates api data
    */
-  public static function getKimaiUpdates() {
+  public static function getKimaiUpdatesData() {
     $apiKey = Civi::settings()->get('exthours_kimai_api_key');
 
     // Kimai Get Timesheet Method
@@ -165,6 +163,52 @@ class CRM_Exthours_Kimai_Utils {
     $request = CRM_Exthours_Kimai_Api::request($kimaiAuth, 'POST', 'core/civicrm.php');
 
     return $request['result']['items']['queued_data'];
+  }
+
+  /**
+   * Update activity using the kimai queued data
+   * @param $queuedId
+   * @param $action (delete and update)
+   * @param $data (queued_timesheet_data)
+   */
+  public static function getKimaiUpdate($queuedId, $action, $data) {
+    $apiKey = Civi::settings()->get('exthours_kimai_api_key');
+
+    if ($action === 'update') {
+      $entryActivity = \Civi\Api4\EntryActivity::get()
+        ->addWhere('external_id', '=', $data['timeEntryID'])
+        ->execute()
+        ->first();
+
+      if ($entryActivity) {
+        // update data in activity using activity_id in exthours_entry_activity
+      }
+      else {
+        // Get contact id in exthours_project_contact for the source_contact_id in activity
+        //
+
+        // Add new activity
+        $createActivity = \Civi\Api4\Activity::create()
+          ->addValue('activity_type_id:name', 'Service Hours')
+          ->addValue('activity_date_time', $data['start'])
+          ->addValue('duration', $data['duration'])
+          ->addValue('details', $data['comment'])
+          // ->addValue('source_contact_id', )
+          ->execute()
+          ->first();
+
+        // Add new exthours_entry_activity
+        $createEntryActivity = \Civi\Api4\EntryActivity::create()
+          ->addValue('external_id', $data['timeEntryID'])
+          ->addValue('activity_id', $createActivity['id'])
+          ->execute();
+      }
+    }
+    elseif ($action === 'delete') {
+      // delete timesheet in exthours_entry_activity and in activity
+    }
+
+    // confirmQueueMessage($queueId)
   }
 
 }
