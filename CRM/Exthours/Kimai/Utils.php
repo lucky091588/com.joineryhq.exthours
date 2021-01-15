@@ -143,4 +143,28 @@ class CRM_Exthours_Kimai_Utils {
     return $organization['display_name'];
   }
 
+  /**
+   * Get get kimai getUpdates api data
+   *
+   * @return organization name.
+   */
+  public static function getKimaiUpdates() {
+    $apiKey = Civi::settings()->get('exthours_kimai_api_key');
+
+    // Kimai Get Timesheet Method
+    $kimaiAuth = array(
+      "method" => "getUpdates",
+      "params" => array(
+        "apiKey" => $apiKey,
+      ),
+      "id" => "1",
+      "jsonrpc" => "2.0",
+    );
+
+    // API Request
+    $request = CRM_Exthours_Kimai_Api::request($kimaiAuth, 'POST', 'core/civicrm.php');
+
+    return $request['result']['items']['queued_data'];
+  }
+
 }
