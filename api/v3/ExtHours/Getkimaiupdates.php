@@ -10,7 +10,6 @@ use CRM_Exthours_ExtensionUtil as E;
  * @see https://docs.civicrm.org/dev/en/latest/framework/api-architecture/
  */
 function _civicrm_api3_ext_hours_Getkimaiupdates_spec(&$spec) {
-  $spec['kimaiTimeSheets']['api.required'] = 1;
 }
 
 /**
@@ -26,19 +25,12 @@ function _civicrm_api3_ext_hours_Getkimaiupdates_spec(&$spec) {
  * @throws API_Exception
  */
 function civicrm_api3_ext_hours_Getkimaiupdates($params) {
-  if (array_key_exists('kimaiTimeSheets', $params) && $params['kimaiTimeSheets'] == 'updates') {
-    $returnValues = CRM_Exthours_Kimai_Utils::getKimaiUpdatesData();
-    // ALTERNATIVE: $returnValues = []; // OK, success
-    // ALTERNATIVE: $returnValues = ["Some value"]; // OK, return a single value
+  $queuedData = CRM_Exthours_Kimai_Utils::getKimaiUpdatesData();
 
-    foreach ($returnValues as $data) {
-      CRM_Exthours_Kimai_Utils::getKimaiUpdate($data['id'], $data['action'], $data);
-    }
+  foreach ($queuedData as $data) {
+    $results[$data['timeEntryID']] = CRM_Exthours_Kimai_Utils::getKimaiUpdate($data['id'], $data['action'], $data);
+  }
 
-    // Spec: civicrm_api3_create_success($values = 1, $params = [], $entity = NULL, $action = NULL)
-    return civicrm_api3_create_success($returnValues, $params, 'ExtHours', 'Getkimaiupdates');
-  }
-  else {
-    throw new API_Exception(/*error_message*/ 'Everyone knows that the magicword is "sesame"', /*error_code*/ 'magicword_incorrect');
-  }
+  // Spec: civicrm_api3_create_success($values = 1, $params = [], $entity = NULL, $action = NULL)
+  return civicrm_api3_create_success($results, $params, 'ExtHours', 'Getkimaiupdates');
 }

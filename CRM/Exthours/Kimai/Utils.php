@@ -44,7 +44,7 @@ class CRM_Exthours_Kimai_Utils {
     $kimaiAuth = array(
       "method" => "primeUpdates",
       "params" => array(
-        "apiKey" => $apiKey,
+        $apiKey,
       ),
       "id" => "1",
       "jsonrpc" => "2.0",
@@ -153,7 +153,7 @@ class CRM_Exthours_Kimai_Utils {
     $kimaiAuth = array(
       "method" => "getUpdates",
       "params" => array(
-        "apiKey" => $apiKey,
+        $apiKey,
       ),
       "id" => "1",
       "jsonrpc" => "2.0",
@@ -166,34 +166,76 @@ class CRM_Exthours_Kimai_Utils {
   }
 
   /**
+   * Confirm queued timesheet in kimai using API
+   * @param $queuedId
+   */
+  public static function confirmQueueMessage($queuedId) {
+    $apiKey = Civi::settings()->get('exthours_kimai_api_key');
+
+    // Kimai Confirm Queue Message
+    $kimaiAuth = array(
+      "method" => "confirmQueueMessage",
+      "params" => array(
+        $apiKey,
+        $queuedId,
+      ),
+      "id" => "1",
+      "jsonrpc" => "2.0",
+    );
+
+    // API Request
+    $request = CRM_Exthours_Kimai_Api::request($kimaiAuth, 'POST', 'core/civicrm.php');
+
+    return $request['result']['items'];
+  }
+
+  /**
    * Update activity using the kimai queued data
    * @param $queuedId
    * @param $action (delete and update)
    * @param $data (queued_timesheet_data)
    */
   public static function getKimaiUpdate($queuedId, $action, $data) {
-    $apiKey = Civi::settings()->get('exthours_kimai_api_key');
+    $entryActivity = \Civi\Api4\EntryActivity::get()
+      ->addWhere('external_id', '=', $data['timeEntryID'])
+      ->execute()
+      ->first();
+
+    $message = [];
 
     if ($action === 'update') {
-      $entryActivity = \Civi\Api4\EntryActivity::get()
-        ->addWhere('external_id', '=', $data['timeEntryID'])
+      // Get contact id in exthours_project_contact for the source_contact_id in activity
+      $projectContacts = \Civi\Api4\ProjectContact::get()
+        ->addWhere('external_id', '=', $data['projectID'])
         ->execute()
         ->first();
 
+      // If projectID doesn't exist in exthours_project_contact, log error message and don't save the activity
+      if (!$projectContacts) {
+        $errorMessage = "Exthours: could not find organization contact for kimai queue item {$queuedId}, timesheet entry id {$data['timeEntryID']}";
+        CRM_Core_Error::debug_log_message($errorMessage);
+        return $errorMessage;
+      }
+
       if ($entryActivity) {
         // update data in activity using activity_id in exthours_entry_activity
+        $results = \Civi\Api4\Activity::update()
+          ->addWhere('id', '=', $entryActivity['activity_id'])
+          ->addValue('activity_type_id:name', 'Service Hours')
+          ->addValue('activity_date_time', date("Y-m-d H:i:s", $data['start']))
+          ->addValue('duration', $data['duration'])
+          ->addValue('details', $data['comment'])
+          ->addValue('source_contact_id', $projectContacts['contact_id'])
+          ->execute();
       }
       else {
-        // Get contact id in exthours_project_contact for the source_contact_id in activity
-        //
-
         // Add new activity
         $createActivity = \Civi\Api4\Activity::create()
           ->addValue('activity_type_id:name', 'Service Hours')
-          ->addValue('activity_date_time', $data['start'])
+          ->addValue('activity_date_time', date("Y-m-d H:i:s", $data['start']))
           ->addValue('duration', $data['duration'])
           ->addValue('details', $data['comment'])
-          // ->addValue('source_contact_id', )
+          ->addValue('source_contact_id', $projectContacts['contact_id'])
           ->execute()
           ->first();
 
@@ -206,9 +248,19 @@ class CRM_Exthours_Kimai_Utils {
     }
     elseif ($action === 'delete') {
       // delete timesheet in exthours_entry_activity and in activity
+      $deleteActivity = \Civi\Api4\Activity::delete()
+        ->addWhere('id', '=', $entryActivity['activity_id'])
+        ->execute();
+
+      // delete exthours_entry_activity
+      $createEntryActivity = \Civi\Api4\EntryActivity::delete()
+        ->addWhere('activity_id', '=', $entryActivity['activity_id'])
+        ->execute();
     }
 
-    // confirmQueueMessage($queueId)
+    $message = self::confirmQueueMessage($queuedId);
+
+    return $message;
   }
 
 }
