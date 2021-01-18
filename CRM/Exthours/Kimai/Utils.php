@@ -247,14 +247,14 @@ class CRM_Exthours_Kimai_Utils {
       }
     }
     elseif ($action === 'delete') {
-      // delete timesheet in exthours_entry_activity and in activity
+      // delete timesheet in activity
       $deleteActivity = \Civi\Api4\Activity::delete()
         ->addWhere('id', '=', $entryActivity['activity_id'])
         ->execute();
 
       // delete exthours_entry_activity
-      $createEntryActivity = \Civi\Api4\EntryActivity::delete()
-        ->addWhere('activity_id', '=', $entryActivity['activity_id'])
+      $deleteEntryActivity = \Civi\Api4\EntryActivity::delete()
+        ->addWhere('external_id', '=', $entryActivity['external_id'])
         ->execute();
     }
 
