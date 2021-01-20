@@ -217,13 +217,15 @@ class CRM_Exthours_Kimai_Utils {
         return $errorMessage;
       }
 
+      $duration = $data['duration'] / 60;
+
       if ($entryActivity) {
         // update data in activity using activity_id in exthours_entry_activity
         $results = \Civi\Api4\Activity::update()
           ->addWhere('id', '=', $entryActivity['activity_id'])
           ->addValue('activity_type_id:name', 'Service Hours')
           ->addValue('activity_date_time', date("Y-m-d H:i:s", $data['start']))
-          ->addValue('duration', $data['duration'])
+          ->addValue('duration', round($duration))
           ->addValue('details', $data['comment'])
           ->addValue('source_contact_id', $projectContacts['contact_id'])
           ->execute();
@@ -233,7 +235,7 @@ class CRM_Exthours_Kimai_Utils {
         $createActivity = \Civi\Api4\Activity::create()
           ->addValue('activity_type_id:name', 'Service Hours')
           ->addValue('activity_date_time', date("Y-m-d H:i:s", $data['start']))
-          ->addValue('duration', $data['duration'])
+          ->addValue('duration', round($duration))
           ->addValue('details', $data['comment'])
           ->addValue('source_contact_id', $projectContacts['contact_id'])
           ->execute()
