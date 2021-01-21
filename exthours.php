@@ -89,7 +89,7 @@ function exthours_civicrm_managed(&$entities) {
   _exthours_civix_civicrm_managed($entities);
   $entities[] = array(
     'module' => 'com.joineryhq.exthours',
-    'name' => 'servicehours',
+    'name' => 'exthours_servicehours',
     'entity' => 'OptionValue',
     'params' => array(
       'version' => 3,
