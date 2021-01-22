@@ -89,14 +89,26 @@ function exthours_civicrm_managed(&$entities) {
   _exthours_civix_civicrm_managed($entities);
   $entities[] = array(
     'module' => 'com.joineryhq.exthours',
-    'name' => 'exthours_servicehours',
+    'name' => 'servicehours',
     'entity' => 'OptionValue',
     'params' => array(
       'version' => 3,
       'label' => 'Service Hours',
-      'name' => 'Service Hours',
+      'name' => 'exthours_servicehours',
       'description' => 'Service Hours for External Hours Tracking extension',
       'option_group_id' => 2,
+    ),
+  );
+
+  $entities[] = array(
+    'module' => 'com.joineryhq.exthours',
+    'name' => 'workcategory',
+    'entity' => 'OptionGroup',
+    'params' => array(
+      'version' => 3,
+      'title' => 'ExtHours Work Category',
+      'name' => 'exthours_workcategory',
+      'description' => 'Work Category for External Hours Tracking extension',
     ),
   );
 }

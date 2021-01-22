@@ -37,9 +37,14 @@ class CRM_Exthours_Upgrader extends CRM_Exthours_Upgrader_Base {
   /**
    * Example: Run an external SQL script when the module is uninstalled.
    */
-  // public function uninstall() {
-  //  $this->executeSqlFile('sql/myuninstall.sql');
-  // }
+  public function uninstall() {
+    // Delete related settings when uninstall
+    Civi::settings()->set('exthours_kimai_url', '');
+    Civi::settings()->set('exthours_kimai_api_key', '');
+    Civi::settings()->set('exthours_kimai_setup_primed', '');
+
+    // $this->executeSqlFile('sql/myuninstall.sql');
+  }
 
   /**
    * Example: Run a simple query when a module is enabled.

@@ -168,6 +168,7 @@ class CRM_Exthours_Kimai_Utils {
   /**
    * Confirm queued timesheet in kimai using API
    * @param $queuedId
+   * @return array
    */
   public static function confirmQueueMessage($queuedId) {
     $apiKey = Civi::settings()->get('exthours_kimai_api_key');
@@ -217,25 +218,27 @@ class CRM_Exthours_Kimai_Utils {
         return $errorMessage;
       }
 
-      $duration = $data['duration'] / 60;
+      $duration = round($data['duration'] / 60);
 
       if ($entryActivity) {
         // update data in activity using activity_id in exthours_entry_activity
         $results = \Civi\Api4\Activity::update()
           ->addWhere('id', '=', $entryActivity['activity_id'])
-          ->addValue('activity_type_id:name', 'Service Hours')
+          ->addValue('activity_type_id:name', 'exthours_servicehours')
           ->addValue('activity_date_time', date("Y-m-d H:i:s", $data['start']))
-          ->addValue('duration', round($duration))
+          ->addValue('duration', $duration)
           ->addValue('details', $data['comment'])
           ->addValue('source_contact_id', $projectContacts['contact_id'])
           ->execute();
+
+        self::saveActivityInWorkCategory($entryActivity['activity_id'], $data['activityID'], 'update');
       }
       else {
         // Add new activity
         $createActivity = \Civi\Api4\Activity::create()
-          ->addValue('activity_type_id:name', 'Service Hours')
+          ->addValue('activity_type_id:name', 'exthours_servicehours')
           ->addValue('activity_date_time', date("Y-m-d H:i:s", $data['start']))
-          ->addValue('duration', round($duration))
+          ->addValue('duration', $duration)
           ->addValue('details', $data['comment'])
           ->addValue('source_contact_id', $projectContacts['contact_id'])
           ->execute()
@@ -246,6 +249,8 @@ class CRM_Exthours_Kimai_Utils {
           ->addValue('external_id', $data['timeEntryID'])
           ->addValue('activity_id', $createActivity['id'])
           ->execute();
+
+        self::saveActivityInWorkCategory($createActivity['id'], $data['activityID']);
       }
     }
     elseif ($action === 'delete') {
@@ -263,6 +268,55 @@ class CRM_Exthours_Kimai_Utils {
     $message = self::confirmQueueMessage($queuedId);
 
     return $message;
+  }
+
+  /**
+   * Get all registered activity in kimai using API
+   * @param $queuedId
+   * @return array of kimai activities
+   */
+  public static function getKimaiActivities() {
+    $apiKey = Civi::settings()->get('exthours_kimai_api_key');
+
+    // Kimai Get Activities API
+    $kimaiAuth = array(
+      "method" => "getActivities",
+      "params" => array(
+        $apiKey,
+      ),
+      "id" => "1",
+      "jsonrpc" => "2.0",
+    );
+
+    // API Request
+    $request = CRM_Exthours_Kimai_Api::request($kimaiAuth, 'POST', 'core/civicrm.php');
+
+    return $request['result']['items'];
+  }
+
+  /**
+   * Save kimai activity ID in the work category custom field
+   * @param $entityId
+   * @param $workCategoryId
+   * @param $action (existing activity for update)
+   */
+  public static function saveActivityInWorkCategory($entityId, $workCategoryId, $action = NULL) {
+    $workCategory = \Civi\Api4\CustomField::get()
+      ->addWhere('option_group_id:name', '=', 'exthours_workcategory')
+      ->execute()
+      ->first();
+
+    $serviceHours = \Civi\Api4\CustomGroup::get()
+      ->addWhere('id', '=', $workCategory['custom_group_id'])
+      ->execute()
+      ->first();
+
+    if ($action === 'update') {
+      CRM_Core_DAO::executeQuery("UPDATE `{$serviceHours['table_name']}` SET `{$workCategory['column_name']}` = {$workCategoryId} WHERE `entity_id` = {$entityId}");
+    }
+    else {
+      CRM_Core_DAO::executeQuery("INSERT INTO `{$serviceHours['table_name']}` (`entity_id`, `{$workCategory['column_name']}`) VALUES ('$entityId', '$workCategoryId')");
+    }
   }
 
 }
