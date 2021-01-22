@@ -39,4 +39,10 @@
         {crmButton p="civicrm/admin/exthours/setup" q="reset=1"}{ts}Setup{/ts}{/crmButton}
       </div>
   </div>
+
+  <div class="crm-block crm-form-block crm-admin-options-form-block">
+      <div class="action-link">
+        {crmButton p="civicrm/admin/exthours/projects" q="reset=1"}{ts}Link Projects to Organizations{/ts}{/crmButton}
+      </div>
+  </div>
 {/if}

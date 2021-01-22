@@ -41,6 +41,7 @@
     {/if}
     <div class="action-link">
       {crmButton p='civicrm/admin/exthours/projects' q="action=add&reset=1" id="newProjects"  icon="plus-circle"}{ts}Add Project{/ts}{/crmButton}
+      {crmButton p='civicrm/admin/exthours/settings' q="reset=1" class="cancel" icon="times"}{ts}Done{/ts}{/crmButton}
     </div>
   </div>
 {/if}
