@@ -106,6 +106,7 @@ class CRM_Exthours_Form_Setup extends CRM_Core_Form {
       ->addValue('html_type', 'Select')
       ->addValue('option_group_id', $workCategory['id'])
       ->addValue('is_view', TRUE)
+      ->addValue('is_searchable', TRUE)
       ->execute();
 
     // Save all kimai activities in option group id exthours_workcategory
