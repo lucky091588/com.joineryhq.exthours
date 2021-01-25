@@ -15,7 +15,6 @@
 
 <script type="text/javascript">
   cj('form.{$form.formClass}').data('kimaiProjects', {$kimaiProjects|@json_encode});
-  cj('form.{$form.formClass}').data('contactOrganization', {$contactOrganization|@json_encode});
 
   {literal}
     CRM.$(function($) {
@@ -26,13 +25,6 @@
         .crmSelect2({
           data: form.data('kimaiProjects'),
           placeholder: '{/literal}{ts escape='js'}Select Project{/ts}{literal}'
-        });
-
-      $('input.crm-organization-selector', form)
-        .addClass('crm-action-menu fa-code')
-        .crmSelect2({
-          data: form.data('contactOrganization'),
-          placeholder: '{/literal}{ts escape='js'}Select Organization{/ts}{literal}'
         });
     });
   {/literal}

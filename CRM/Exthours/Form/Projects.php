@@ -25,18 +25,8 @@ class CRM_Exthours_Form_Projects extends CRM_Core_Form {
   }
 
   public function buildQuickForm() {
-    $contactOrganization = [];
     $projects = [];
 
-    // Fetch Contact Organization API
-    $fetchContactOrganization = \Civi\Api4\Contact::get()
-      ->addWhere('contact_type:name', '=', 'Organization')
-      ->execute();
-    foreach ($fetchContactOrganization as $organization) {
-      $contactOrganization[$organization['id']]['id'] = $organization['id'];
-      $contactOrganization[$organization['id']]['text'] = $organization['display_name'];
-    }
-    sort($contactOrganization);
 
     // Fetch Kimai Projects
     $kimaiProjects = CRM_Exthours_Kimai_Utils::getKimaiProjects();
@@ -55,14 +45,15 @@ class CRM_Exthours_Form_Projects extends CRM_Core_Form {
       TRUE
     );
 
-    $this->add('text',
-      'civicrm_organization_id',
-      E::ts('CiviCRM Organization'),
-      [
-        'class' => 'crm-organization-selector big',
+    // Fetch Contact Organization API using addEntityRef
+    $entityRefParams = [
+      'create' => FALSE,
+      'api' => [
+        'params' => ['contact_type' => 'Organization'],
       ],
-      TRUE
-    );
+      'placeholder' => 'Select Organization',
+    ];
+    $this->addEntityRef('civicrm_organization_id', E::ts('CiviCRM Organization'), $entityRefParams, TRUE);
 
     $this->addButtons(array(
       array(
@@ -76,7 +67,6 @@ class CRM_Exthours_Form_Projects extends CRM_Core_Form {
       ),
     ));
 
-    $this->assign('contactOrganization', $contactOrganization);
     $this->assign('kimaiProjects', $projects);
 
     parent::buildQuickForm();
