@@ -43,6 +43,27 @@ class CRM_Exthours_Upgrader extends CRM_Exthours_Upgrader_Base {
     Civi::settings()->set('exthours_kimai_api_key', '');
     Civi::settings()->set('exthours_kimai_setup_primed', '');
 
+    // Get service hours option value to delete all activity related to exthours and custom group
+    $getServiceHours = \Civi\Api4\OptionValue::get()
+      ->addWhere('name', '=', 'exthours_servicehours')
+      ->execute()
+      ->first();
+
+    // Delete all activity related to exthours
+    $cleanActivities = \Civi\Api4\Activity::delete()
+      ->addWhere('activity_type_id', '=', $getServiceHours['value'])
+      ->execute();
+
+    // Delete all related custom field
+    $cleanCustomField = \Civi\Api4\CustomField::delete()
+      ->addWhere('option_group_id:name', '=', 'exthours_workcategory')
+      ->execute();
+
+    // Delete all related custom group
+    $cleanCustomGroups = \Civi\Api4\CustomGroup::delete()
+      ->addWhere('extends_entity_column_value', '=', $getServiceHours['value'])
+      ->execute();
+
     // $this->executeSqlFile('sql/myuninstall.sql');
   }
 
