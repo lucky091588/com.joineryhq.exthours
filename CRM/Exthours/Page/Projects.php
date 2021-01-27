@@ -49,9 +49,21 @@ class CRM_Exthours_Page_Projects extends CRM_Core_Page {
     );
 
     $this->assign('action', $action);
+
     $id = CRM_Utils_Request::retrieve('id', 'Positive',
       $this, FALSE, 0
     );
+
+    if ($action & CRM_Core_Action::DELETE) {
+      $session = CRM_Core_Session::singleton();
+      $session->pushUserContext(CRM_Utils_System::url('civicrm/admin/exthours/projects/', 'action=browse'));
+      $controller = new CRM_Core_Controller_Simple('CRM_Exthours_Form_ProjectDelete', "Delete Project", NULL);
+      $controller->set('id', $id);
+      $controller->setEmbedded(TRUE);
+      $controller->process();
+      $controller->run();
+    }
+
 
     if ($action & (CRM_Core_Action::UPDATE | CRM_Core_Action::ADD)) {
       $this->edit($id, $action);

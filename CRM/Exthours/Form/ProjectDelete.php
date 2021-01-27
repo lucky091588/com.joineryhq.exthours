@@ -43,10 +43,6 @@ class CRM_Exthours_Form_ProjectDelete extends CRM_Core_Form {
 
     CRM_Core_Session::setStatus(E::ts('Integrated Project has been deleted!'), E::ts('Kimai Integration'), 'success');
 
-    CRM_Utils_System::redirect(CRM_Utils_System::url('/civicrm/admin/exthours/projects',
-      "reset=1"
-    ));
-
     parent::postProcess();
   }
 
