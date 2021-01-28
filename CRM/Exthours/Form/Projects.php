@@ -47,7 +47,7 @@ class CRM_Exthours_Form_Projects extends CRM_Core_Form {
 
     // Fetch Contact Organization API using addEntityRef
     $entityRefParams = [
-      'create' => FALSE,
+      'create' => TRUE,
       'api' => [
         'params' => ['contact_type' => 'Organization'],
       ],
