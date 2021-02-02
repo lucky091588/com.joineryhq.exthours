@@ -229,6 +229,7 @@ class CRM_Exthours_Kimai_Utils {
           ->addValue('duration', $duration)
           ->addValue('details', $data['comment'])
           ->addValue('source_contact_id', $projectContacts['contact_id'])
+          ->addValue('target_contact_id', $projectContacts['contact_id'])
           ->execute();
 
         self::saveActivityInWorkCategory($entryActivity['activity_id'], $data['activityID'], 'update');
@@ -241,6 +242,7 @@ class CRM_Exthours_Kimai_Utils {
           ->addValue('duration', $duration)
           ->addValue('details', $data['comment'])
           ->addValue('source_contact_id', $projectContacts['contact_id'])
+          ->addValue('target_contact_id', $projectContacts['contact_id'])
           ->execute()
           ->first();
 
