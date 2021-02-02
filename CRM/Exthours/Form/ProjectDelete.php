@@ -9,14 +9,7 @@ use CRM_Exthours_ExtensionUtil as E;
  */
 class CRM_Exthours_Form_ProjectDelete extends CRM_Core_Form {
 
-  public function preProcess() {
-    $id = CRM_Utils_Request::retrieve('id', 'Positive',
-      $this, FALSE, 0
-    );
-  }
-
   public function buildQuickForm() {
-
     $this->addButtons(array(
       array(
         'type' => 'next',

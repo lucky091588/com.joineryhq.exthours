@@ -87,30 +87,6 @@ function exthours_civicrm_upgrade($op, CRM_Queue_Queue $queue = NULL) {
  */
 function exthours_civicrm_managed(&$entities) {
   _exthours_civix_civicrm_managed($entities);
-  $entities[] = array(
-    'module' => 'com.joineryhq.exthours',
-    'name' => 'servicehours',
-    'entity' => 'OptionValue',
-    'params' => array(
-      'version' => 3,
-      'label' => 'Service Hours',
-      'name' => 'exthours_servicehours',
-      'description' => 'Service Hours for External Hours Tracking extension',
-      'option_group_id' => 2,
-    ),
-  );
-
-  $entities[] = array(
-    'module' => 'com.joineryhq.exthours',
-    'name' => 'workcategory',
-    'entity' => 'OptionGroup',
-    'params' => array(
-      'version' => 3,
-      'title' => 'ExtHours Work Category',
-      'name' => 'exthours_workcategory',
-      'description' => 'Work Category for External Hours Tracking extension',
-    ),
-  );
 }
 
 /**
@@ -208,16 +184,16 @@ function exthours_civicrm_navigationMenu(&$menu) {
     ),
   );
 
-  foreach ($pages as $item) {
+  foreach ($pages as $page) {
     // Check that our item doesn't already exist.
-    $menu_item_search = array('url' => $item['url']);
-    $menu_items = array();
-    CRM_Core_BAO_Navigation::retrieve($menu_item_search, $menu_items);
-    if (empty($menu_items)) {
+    $menu_item_properties = array('url' => $page['url']);
+    $existing_menu_items = array();
+    CRM_Core_BAO_Navigation::retrieve($menu_item_properties, $existing_menu_items);
+    if (empty($existing_menu_items)) {
       // Now we're sure it doesn't exist; add it to the menu.
-      $path = implode('/', $item['parent']);
-      unset($item['parent']);
-      _exthours_civix_insert_navigation_menu($menu, $path, $item);
+      $menuPath = implode('/', $page['parent']);
+      unset($page['parent']);
+      _exthours_civix_insert_navigation_menu($menu, $menuPath, $page);
     }
   }
 }
@@ -226,12 +202,12 @@ function exthours_civicrm_navigationMenu(&$menu) {
  * Log CiviCRM API errors to CiviCRM log.
  */
 function _exthours_log_api_error(API_Exception $e, string $entity, string $action, array $params) {
-  $message = "CiviCRM API Error '{$entity}.{$action}': " . $e->getMessage() . '; ';
-  $message .= "API parameters when this error happened: " . json_encode($params) . '; ';
+  $logMessage = "CiviCRM API Error '{$entity}.{$action}': " . $e->getMessage() . '; ';
+  $logMessage .= "API parameters when this error happened: " . json_encode($params) . '; ';
   $bt = debug_backtrace();
-  $error_location = "{$bt[1]['file']}::{$bt[1]['line']}";
-  $message .= "Error API called from: $error_location";
-  CRM_Core_Error::debug_log_message($message);
+  $errorLocation = "{$bt[1]['file']}::{$bt[1]['line']}";
+  $logMessage .= "Error API called from: $errorLocation";
+  CRM_Core_Error::debug_log_message($logMessage);
 }
 
 /**
