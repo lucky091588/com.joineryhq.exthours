@@ -203,7 +203,7 @@ function exthours_civicrm_navigationMenu(&$menu) {
       'label' => E::ts('External Hours'),
       'name' => 'External Hours',
       'url' => 'civicrm/admin/exthours/settings?reset=1',
-      'parent' => array('Administer', 'Customize Data and Screens'),
+      'parent' => array('Administer', 'System Settings'),
       'permission' => 'access CiviCRM',
     ),
   );
