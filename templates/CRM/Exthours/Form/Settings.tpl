@@ -42,7 +42,7 @@
 
   <div class="crm-block crm-form-block crm-admin-options-form-block">
       <div class="action-link">
-        {crmButton p="civicrm/admin/exthours/projects" q="reset=1"}{ts}Link Projects to Organizations{/ts}{/crmButton}
+        {crmButton p="civicrm/admin/exthours/project" q="reset=1"}{ts}Link Projects to Organizations{/ts}{/crmButton}
       </div>
   </div>
 {/if}

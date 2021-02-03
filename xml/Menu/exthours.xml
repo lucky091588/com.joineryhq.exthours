@@ -13,13 +13,13 @@
     <access_arguments>access CiviCRM</access_arguments>
   </item>
   <item>
-    <path>civicrm/admin/exthours/projects</path>
-    <page_callback>CRM_Exthours_Page_Projects</page_callback>
+    <path>civicrm/admin/exthours/project</path>
+    <page_callback>CRM_Exthours_Page_Project</page_callback>
     <title>Projects</title>
     <access_arguments>access CiviCRM</access_arguments>
   </item>
   <item>
-    <path>civicrm/admin/exthours/projects/delete</path>
+    <path>civicrm/admin/exthours/project/delete</path>
     <page_callback>CRM_Exthours_Form_ProjectDelete</page_callback>
     <title>ProjectDelete</title>
     <access_arguments>access CiviCRM</access_arguments>

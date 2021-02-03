@@ -7,7 +7,7 @@ use CRM_Exthours_ExtensionUtil as E;
  *
  * @see https://docs.civicrm.org/dev/en/latest/framework/quickform/
  */
-class CRM_Exthours_Form_Projects extends CRM_Core_Form {
+class CRM_Exthours_Form_Project extends CRM_Core_Form {
 
   /**
    * System ID for Project Contact being edited.
@@ -26,7 +26,6 @@ class CRM_Exthours_Form_Projects extends CRM_Core_Form {
 
   public function buildQuickForm() {
     $projects = [];
-
 
     // Fetch Kimai Projects
     $kimaiProjects = CRM_Exthours_Kimai_Utils::getKimaiProjects();

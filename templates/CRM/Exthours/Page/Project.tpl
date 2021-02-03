@@ -1,5 +1,5 @@
 {if $action eq 1 or $action eq 2}
-  {include file="CRM/Exthours/Form/Projects.tpl"}
+  {include file="CRM/Exthours/Form/Project.tpl"}
 {elseif $action eq 8}
   {include file="CRM/Exthours/Form/ProjectDelete.tpl"}
 {else}
@@ -40,7 +40,7 @@
        {/if}
     {/if}
     <div class="action-link">
-      {crmButton p='civicrm/admin/exthours/projects' q="action=add&reset=1" id="newProjects"  icon="plus-circle"}{ts}Add Project{/ts}{/crmButton}
+      {crmButton p='civicrm/admin/exthours/project' q="action=add&reset=1" id="newProjects"  icon="plus-circle"}{ts}Add Project{/ts}{/crmButton}
       {crmButton p='civicrm/admin/exthours/settings' q="reset=1" class="cancel" icon="times"}{ts}Done{/ts}{/crmButton}
     </div>
   </div>

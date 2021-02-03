@@ -1,7 +1,7 @@
 <?php
 use CRM_Exthours_ExtensionUtil as E;
 
-class CRM_Exthours_Page_Projects extends CRM_Core_Page {
+class CRM_Exthours_Page_Project extends CRM_Core_Page {
 
   /**
    * @var bool
@@ -23,13 +23,13 @@ class CRM_Exthours_Page_Projects extends CRM_Core_Page {
       self::$_links = [
         CRM_Core_Action::UPDATE => [
           'name' => E::ts('View and Edit Project'),
-          'url' => 'civicrm/admin/exthours/projects',
+          'url' => 'civicrm/admin/exthours/project',
           'qs' => 'reset=1&action=update&id=%%id%%',
           'title' => E::ts('Update Project'),
         ],
         CRM_Core_Action::DELETE => [
           'name' => E::ts('Delete'),
-          'url' => 'civicrm/admin/exthours/projects',
+          'url' => 'civicrm/admin/exthours/project',
           'qs' => 'reset=1&action=delete&id=%%id%%',
           'title' => E::ts('Delete Project'),
         ],
@@ -56,14 +56,13 @@ class CRM_Exthours_Page_Projects extends CRM_Core_Page {
 
     if ($action & CRM_Core_Action::DELETE) {
       $session = CRM_Core_Session::singleton();
-      $session->pushUserContext(CRM_Utils_System::url('civicrm/admin/exthours/projects/', 'action=browse'));
+      $session->pushUserContext(CRM_Utils_System::url('civicrm/admin/exthours/project/', 'action=browse'));
       $controller = new CRM_Core_Controller_Simple('CRM_Exthours_Form_ProjectDelete', "Delete Project", NULL);
       $controller->set('id', $id);
       $controller->setEmbedded(TRUE);
       $controller->process();
       $controller->run();
     }
-
 
     if ($action & (CRM_Core_Action::UPDATE | CRM_Core_Action::ADD)) {
       $this->edit($id, $action);
@@ -87,11 +86,11 @@ class CRM_Exthours_Page_Projects extends CRM_Core_Page {
    */
   public function edit($id, $action) {
     // create a simple controller for editing custom data
-    $controller = new CRM_Core_Controller_Simple('CRM_Exthours_Form_Projects', E::ts('Kimai Projects'), $action);
+    $controller = new CRM_Core_Controller_Simple('CRM_Exthours_Form_Project', E::ts('Kimai Projects'), $action);
 
     // set the userContext stack
     $session = CRM_Core_Session::singleton();
-    $session->pushUserContext(CRM_Utils_System::url('civicrm/admin/exthours/projects', 'action=browse'));
+    $session->pushUserContext(CRM_Utils_System::url('civicrm/admin/exthours/project', 'action=browse'));
     $controller->set('id', $id);
     $controller->setEmbedded(TRUE);
     $controller->process();
