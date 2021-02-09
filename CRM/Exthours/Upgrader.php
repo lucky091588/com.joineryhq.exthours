@@ -59,10 +59,23 @@ class CRM_Exthours_Upgrader extends CRM_Exthours_Upgrader_Base {
       ->addWhere('option_group_id:name', '=', 'exthours_workcategory')
       ->execute();
 
+    // Delete all related custom field
+    $cleanCustomField = \Civi\Api4\CustomField::delete()
+      ->addWhere('label', '=', 'Tracking Number')
+      ->execute();
+
+    // Get all related custom group
+    $getCustomServiceHours = \Civi\Api4\CustomGroup::get()
+      ->addWhere('extends_entity_column_value', '=', $getServiceHours['value'])
+      ->execute()
+      ->first();
+
     // Delete all related custom group
     $cleanCustomGroups = \Civi\Api4\CustomGroup::delete()
       ->addWhere('extends_entity_column_value', '=', $getServiceHours['value'])
       ->execute();
+
+    CRM_Core_DAO::executeQuery("DROP TABLE IF EXISTS {$getCustomServiceHours['table_name']}");
 
     // $this->executeSqlFile('sql/myuninstall.sql');
   }
