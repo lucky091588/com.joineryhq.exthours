@@ -220,6 +220,11 @@ class CRM_Exthours_Kimai_Utils {
 
       $duration = round($data['duration'] / 60);
 
+      $customValues = [
+        'work_category' => $data['activityID'],
+        'tracking_number' => $data['trackingNumber'],
+      ];
+
       if ($entryActivity) {
         // update data in activity using activity_id in exthours_entry_activity
         $results = \Civi\Api4\Activity::update()
@@ -232,7 +237,7 @@ class CRM_Exthours_Kimai_Utils {
           ->addValue('target_contact_id', $projectContacts['contact_id'])
           ->execute();
 
-        self::saveActivityInWorkCategory($entryActivity['activity_id'], $data['activityID'], $data['trackingNumber'], 'update');
+        self::saveActivityCustomFields($entryActivity['activity_id'], $customValues, 'update');
       }
       else {
         // Add new activity
@@ -252,7 +257,7 @@ class CRM_Exthours_Kimai_Utils {
           ->addValue('activity_id', $createActivity['id'])
           ->execute();
 
-        self::saveActivityInWorkCategory($createActivity['id'], $data['activityID'], $data['trackingNumber']);
+        self::saveActivityCustomFields($createActivity['id'], $customValues);
       }
     }
     elseif ($action === 'delete') {
@@ -302,7 +307,7 @@ class CRM_Exthours_Kimai_Utils {
    * @param $workCategoryId
    * @param $action (existing activity for update)
    */
-  public static function saveActivityInWorkCategory($entityId, $workCategoryId, $trackingNumberVal, $action = NULL) {
+  public static function saveActivityCustomFields($entityId, $customFields, $action = NULL) {
     // Get column name of workcategory custom field
     $workCategory = \Civi\Api4\CustomField::get()
       ->addWhere('option_group_id:name', '=', 'exthours_workcategory')
@@ -322,15 +327,15 @@ class CRM_Exthours_Kimai_Utils {
       ->first();
 
     // Add empty space string if trackingNumberVal is empty
-    $trackingNumberVal = !empty($trackingNumberVal) ? $trackingNumberVal : ' ';
+    $trackingNumberVal = !empty($customFields['tracking_number']) ? $customFields['tracking_number'] : ' ';
 
     if ($action === 'update') {
       // Execute query update
-      CRM_Core_DAO::executeQuery("UPDATE `{$serviceHours['table_name']}` SET `{$workCategory['column_name']}` = {$workCategoryId}, `{$trackingNumber['column_name']}` = '{$trackingNumberVal}' WHERE `entity_id` = {$entityId}");
+      CRM_Core_DAO::executeQuery("UPDATE `{$serviceHours['table_name']}` SET `{$workCategory['column_name']}` = {$customFields['work_category']}, `{$trackingNumber['column_name']}` = '{$trackingNumberVal}' WHERE `entity_id` = {$entityId}");
     }
     else {
       // Execute query and insert new data
-      CRM_Core_DAO::executeQuery("INSERT INTO `{$serviceHours['table_name']}` (`entity_id`, `{$workCategory['column_name']}`, `{$trackingNumber['column_name']}`) VALUES ('{$entityId}', '{$workCategoryId}', '{$trackingNumberVal}')");
+      CRM_Core_DAO::executeQuery("INSERT INTO `{$serviceHours['table_name']}` (`entity_id`, `{$workCategory['column_name']}`, `{$trackingNumber['column_name']}`) VALUES ('{$entityId}', '{$customFields['work_category']}', '{$trackingNumberVal}')");
     }
   }
 
