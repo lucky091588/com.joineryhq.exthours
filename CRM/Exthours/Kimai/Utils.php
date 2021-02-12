@@ -320,23 +320,24 @@ class CRM_Exthours_Kimai_Utils {
       ->execute()
       ->first();
 
-    // Get table name of custom group service hours
-    $serviceHours = \Civi\Api4\CustomGroup::get()
-      ->addWhere('id', '=', $workCategory['custom_group_id'])
-      ->execute()
-      ->first();
+    // Insert/Update work category
+    $createWorkCategory = civicrm_api3('CustomValue', 'create', [
+      'sequential' => 1,
+      'entity_id' => $entityId,
+      'entity_type' => 'Activity',
+      "custom_{$workCategory['id']}" => $customFields['work_category'],
+    ]);
 
     // Add empty space string if trackingNumberVal is empty
     $trackingNumberVal = !empty($customFields['tracking_number']) ? $customFields['tracking_number'] : ' ';
 
-    if ($action === 'update') {
-      // Execute query update
-      CRM_Core_DAO::executeQuery("UPDATE `{$serviceHours['table_name']}` SET `{$workCategory['column_name']}` = {$customFields['work_category']}, `{$trackingNumber['column_name']}` = '{$trackingNumberVal}' WHERE `entity_id` = {$entityId}");
-    }
-    else {
-      // Execute query and insert new data
-      CRM_Core_DAO::executeQuery("INSERT INTO `{$serviceHours['table_name']}` (`entity_id`, `{$workCategory['column_name']}`, `{$trackingNumber['column_name']}`) VALUES ('{$entityId}', '{$customFields['work_category']}', '{$trackingNumberVal}')");
-    }
+    // Insert/Update tracking number
+    $createTrackingNumber = civicrm_api3('CustomValue', 'create', [
+      'sequential' => 1,
+      'entity_id' => $entityId,
+      'entity_type' => 'Activity',
+      "custom_{$trackingNumber['id']}" => $trackingNumberVal,
+    ]);
   }
 
 }
