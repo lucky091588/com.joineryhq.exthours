@@ -135,6 +135,7 @@ class CRM_Exthours_Kimai_Utils {
    */
   public static function getOrganizationName($organizationId) {
     $organization = \Civi\Api4\Contact::get()
+      ->setCheckPermissions(FALSE)
       ->addWhere('id', '=', $organizationId)
       ->addWhere('contact_type', '=', 'Organization')
       ->execute()
@@ -198,6 +199,7 @@ class CRM_Exthours_Kimai_Utils {
    */
   public static function getKimaiUpdate($queuedId, $action, $data) {
     $entryActivity = \Civi\Api4\EntryActivity::get()
+      ->setCheckPermissions(FALSE)
       ->addWhere('external_id', '=', $data['timeEntryID'])
       ->execute()
       ->first();
@@ -207,6 +209,7 @@ class CRM_Exthours_Kimai_Utils {
     if ($action === 'update') {
       // Get contact id in exthours_project_contact for the source_contact_id in activity
       $projectContacts = \Civi\Api4\ProjectContact::get()
+        ->setCheckPermissions(FALSE)
         ->addWhere('external_id', '=', $data['projectID'])
         ->execute()
         ->first();
@@ -228,6 +231,7 @@ class CRM_Exthours_Kimai_Utils {
       if ($entryActivity) {
         // update data in activity using activity_id in exthours_entry_activity
         $results = \Civi\Api4\Activity::update()
+          ->setCheckPermissions(FALSE)
           ->addWhere('id', '=', $entryActivity['activity_id'])
           ->addValue('activity_type_id:name', 'exthours_servicehours')
           ->addValue('activity_date_time', date("Y-m-d H:i:s", $data['start']))
@@ -242,6 +246,7 @@ class CRM_Exthours_Kimai_Utils {
       else {
         // Add new activity
         $createActivity = \Civi\Api4\Activity::create()
+          ->setCheckPermissions(FALSE)
           ->addValue('activity_type_id:name', 'exthours_servicehours')
           ->addValue('activity_date_time', date("Y-m-d H:i:s", $data['start']))
           ->addValue('duration', $duration)
@@ -253,6 +258,7 @@ class CRM_Exthours_Kimai_Utils {
 
         // Add new exthours_entry_activity
         $createEntryActivity = \Civi\Api4\EntryActivity::create()
+          ->setCheckPermissions(FALSE)
           ->addValue('external_id', $data['timeEntryID'])
           ->addValue('activity_id', $createActivity['id'])
           ->execute();
@@ -263,11 +269,13 @@ class CRM_Exthours_Kimai_Utils {
     elseif ($action === 'delete') {
       // delete timesheet in activity
       $deleteActivity = \Civi\Api4\Activity::delete()
+        ->setCheckPermissions(FALSE)
         ->addWhere('id', '=', $entryActivity['activity_id'])
         ->execute();
 
       // delete exthours_entry_activity
       $deleteEntryActivity = \Civi\Api4\EntryActivity::delete()
+        ->setCheckPermissions(FALSE)
         ->addWhere('external_id', '=', $entryActivity['external_id'])
         ->execute();
     }
@@ -310,12 +318,14 @@ class CRM_Exthours_Kimai_Utils {
   public static function saveActivityCustomFields($entityId, $customFields, $action = NULL) {
     // Get column name of workcategory custom field
     $workCategory = \Civi\Api4\CustomField::get()
+      ->setCheckPermissions(FALSE)
       ->addWhere('option_group_id:name', '=', 'exthours_workcategory')
       ->execute()
       ->first();
 
     // Get column name of tracking number custom field
     $trackingNumber = \Civi\Api4\CustomField::get()
+      ->setCheckPermissions(FALSE)
       ->addWhere('label', '=', 'Tracking Number')
       ->execute()
       ->first();

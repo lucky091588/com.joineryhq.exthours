@@ -109,6 +109,7 @@ class CRM_Exthours_Page_Project extends CRM_Core_Page {
     $projects = [];
 
     $projectContacts = \Civi\Api4\ProjectContact::get()
+      ->setCheckPermissions(FALSE)
       ->execute();
     foreach ($projectContacts as $projectContact) {
       $id = $projectContact['id'];
