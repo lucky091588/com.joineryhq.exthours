@@ -146,7 +146,7 @@ class CRM_Exthours_Kimai_Utils {
   /**
    * Get kimai getUpdates api data
    */
-  public static function getKimaiUpdatesData() {
+  public static function getKimaiUpdatesData($projectId) {
     $apiKey = Civi::settings()->get('exthours_kimai_api_key');
 
     // Kimai Get Timesheet Method
@@ -154,6 +154,7 @@ class CRM_Exthours_Kimai_Utils {
       "method" => "getUpdates",
       "params" => array(
         $apiKey,
+        $projectId,
       ),
       "id" => "1",
       "jsonrpc" => "2.0",
