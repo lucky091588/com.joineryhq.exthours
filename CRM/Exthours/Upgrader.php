@@ -45,24 +45,43 @@ class CRM_Exthours_Upgrader extends CRM_Exthours_Upgrader_Base {
 
     // Get service hours option value to delete all activity related to exthours and custom group
     $getServiceHours = \Civi\Api4\OptionValue::get()
+      ->setCheckPermissions(FALSE)
       ->addWhere('name', '=', 'exthours_servicehours')
       ->execute()
       ->first();
 
     // Delete all activity related to exthours
     $cleanActivities = \Civi\Api4\Activity::delete()
+      ->setCheckPermissions(FALSE)
       ->addWhere('activity_type_id', '=', $getServiceHours['value'])
       ->execute();
 
     // Delete all related custom field
     $cleanCustomField = \Civi\Api4\CustomField::delete()
+      ->setCheckPermissions(FALSE)
       ->addWhere('option_group_id:name', '=', 'exthours_workcategory')
       ->execute();
 
+    // Delete all related custom field
+    $cleanCustomField = \Civi\Api4\CustomField::delete()
+      ->setCheckPermissions(FALSE)
+      ->addWhere('label', '=', 'Tracking Number')
+      ->execute();
+
+    // Get all related custom group
+    $getCustomServiceHours = \Civi\Api4\CustomGroup::get()
+      ->setCheckPermissions(FALSE)
+      ->addWhere('extends_entity_column_value', '=', $getServiceHours['value'])
+      ->execute()
+      ->first();
+
     // Delete all related custom group
     $cleanCustomGroups = \Civi\Api4\CustomGroup::delete()
+      ->setCheckPermissions(FALSE)
       ->addWhere('extends_entity_column_value', '=', $getServiceHours['value'])
       ->execute();
+
+    CRM_Core_DAO::executeQuery("DROP TABLE IF EXISTS {$getCustomServiceHours['table_name']}");
 
     // $this->executeSqlFile('sql/myuninstall.sql');
   }

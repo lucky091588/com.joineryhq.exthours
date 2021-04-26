@@ -109,6 +109,17 @@ class CRM_Exthours_Form_Setup extends CRM_Core_Form {
       ->addValue('is_searchable', TRUE)
       ->execute();
 
+    // Create custom fields for the Service Hours Details custom group
+    // set option group id is exthours_workcategory
+    $createTrackingNumberField = \Civi\Api4\CustomField::create()
+      ->addValue('custom_group_id', $createCustomGroup['id'])
+      ->addValue('label', 'Tracking Number')
+      ->addValue('data_type', 'String')
+      ->addValue('html_type', 'Text')
+      ->addValue('is_view', TRUE)
+      ->addValue('is_searchable', TRUE)
+      ->execute();
+
     // Save all kimai activities in option group id exthours_workcategory
     $kimaiActivities = CRM_Exthours_Kimai_Utils::getKimaiActivities();
     foreach ($kimaiActivities as $activity) {
