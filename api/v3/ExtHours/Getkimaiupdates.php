@@ -27,6 +27,7 @@ function _civicrm_api3_ext_hours_Getkimaiupdates_spec(&$spec) {
 function civicrm_api3_ext_hours_Getkimaiupdates($params) {
   // Check $projectContacts if has data
   $projectContacts = \Civi\Api4\ProjectContact::get()
+    ->setCheckPermissions(FALSE)
     ->execute();
 
   // Throw error if it hasn't have data
