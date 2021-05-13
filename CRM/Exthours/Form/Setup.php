@@ -72,62 +72,43 @@ class CRM_Exthours_Form_Setup extends CRM_Core_Form {
     Civi::settings()->set('exthours_kimai_api_key', $request['items'][0]['apiKey']);
     CRM_Exthours_Kimai_Utils::kimaiSetupPrime();
 
-    // Get option value details of exthours_servicehours
-    $serviceHours = \Civi\Api4\OptionValue::get()
+    // Get option value details of exthours_servicehours activity type
+    // (Activity types are stored as option values for option group id=2)
+    $serviceHoursOptionValue = \Civi\Api4\OptionValue::get()
+      ->addWhere('option_group_id', '=', 2)
       ->addWhere('name', '=', 'exthours_servicehours')
       ->execute()
       ->first();
 
     // Get option group details of exthours_workcategory
-    $workCategory = \Civi\Api4\OptionGroup::get()
+    $workCategoryOptionGroup = \Civi\Api4\OptionGroup::get()
       ->addWhere('name', '=', 'exthours_workcategory')
       ->execute()
       ->first();
 
     // Create custom group for the Service Hours Details
     // Extend as Activity with column value as exthours_servicehours value
-    $createCustomGroup = \Civi\Api4\CustomGroup::create()
-      ->addValue('title', 'Service Hours Details')
-      ->addValue('extends', 'Activity')
-      ->addValue('collapse_display', FALSE)
-      ->addValue('style:name', 'Inline')
-      ->addValue('extends_entity_column_value', [
-          $serviceHours['value'],
-        ])
-      ->execute()
-      ->first();
 
-    // Create custom fields for the Service Hours Details custom group
-    // set option group id is exthours_workcategory
-    $createCustomField = \Civi\Api4\CustomField::create()
-      ->addValue('custom_group_id', $createCustomGroup['id'])
-      ->addValue('label', 'Work Category')
-      ->addValue('data_type', 'Int')
-      ->addValue('html_type', 'Select')
-      ->addValue('option_group_id', $workCategory['id'])
-      ->addValue('is_view', TRUE)
-      ->addValue('is_searchable', TRUE)
-      ->execute();
+    $serviceHoursDetailsCustomGroup = $this->_createIfNotExistsAndGetServiceHoursDetailsCustomGroup();
 
-    // Create custom fields for the Service Hours Details custom group
-    // set option group id is exthours_workcategory
-    $createTrackingNumberField = \Civi\Api4\CustomField::create()
-      ->addValue('custom_group_id', $createCustomGroup['id'])
-      ->addValue('label', 'Tracking Number')
-      ->addValue('data_type', 'String')
-      ->addValue('html_type', 'Text')
-      ->addValue('is_view', TRUE)
-      ->addValue('is_searchable', TRUE)
-      ->execute();
+    // Create -- if not exists -- custom fields for the Service Hours Details custom group
+    $this->_createIfNotExistServiceHoursDetailsCustomFields($serviceHoursDetailsCustomGroup['id'], $workCategoryOptionGroup['id']);
 
     // Save all kimai activities in option group id exthours_workcategory
     $kimaiActivities = CRM_Exthours_Kimai_Utils::getKimaiActivities();
     foreach ($kimaiActivities as $activity) {
-      $results = \Civi\Api4\OptionValue::create()
-        ->addValue('option_group_id:name', 'exthours_workcategory')
-        ->addValue('label', $activity['name'])
-        ->addValue('value', $activity['activityID'])
-        ->execute();
+      $existingOptionValue = \Civi\Api4\OptionValue::get()
+        ->addWhere('option_group_id:name', '=', 'exthours_workcategory')
+        ->addWhere('value', '=', $activity['activityID'])
+        ->execute()
+        ->first();
+      if (empty($existingOptionValue)) {
+        $results = \Civi\Api4\OptionValue::create()
+          ->addValue('option_group_id:name', 'exthours_workcategory')
+          ->addValue('label', $activity['name'])
+          ->addValue('value', $activity['activityID'])
+          ->execute();
+      }
     }
 
     CRM_Core_Session::setStatus(E::ts('Kimai API Key has successfully setup.'), E::ts('External Hours: Kimai API Key setup'), "success");
@@ -135,4 +116,76 @@ class CRM_Exthours_Form_Setup extends CRM_Core_Form {
     parent::postProcess();
   }
 
+  /**
+   * Get the Service Hours Details custom group object via api; if it doesn't
+   * exist, create it first.
+   *
+   * @return Object CiviCRM api4 custom group object.
+   */
+  private function _createIfNotExistsAndGetServiceHoursDetailsCustomGroup() {
+    $serviceHoursDetailsCustomGroup = \Civi\Api4\CustomGroup::get()
+      ->addWhere('name', '=', 'Service_Hours_Details')
+      ->addWhere('extends', '=', 'Activity')
+      ->execute()
+      ->first();
+    if (empty($serviceHoursDetailsCustomGroup)) {
+      // Couldn't find one, so create it.
+      $serviceHoursDetailsCustomGroup = \Civi\Api4\CustomGroup::create()
+        ->addValue('name', 'Service_Hours_Details')
+        ->addValue('title', 'Service Hours Details')
+        ->addValue('extends', 'Activity')
+        ->addValue('collapse_display', FALSE)
+        ->addValue('style:name', 'Inline')
+        ->addValue('extends_entity_column_value', [
+            $serviceHoursOptionValue['value'],
+          ])
+        ->execute()
+        ->first();
+    }
+    return $serviceHoursDetailsCustomGroup;
+  }
+
+  /**
+   * Create all appropriate custom fields in the Service Hours Details custom group;
+   * but only create each field if it doesn't exist already.
+   *
+   * @param Int $customGroupId
+   * @param Int $workCategoryoptionGroupId
+   */
+  private function _createIfNotExistServiceHoursDetailsCustomFields($customGroupId, $workCategoryoptionGroupId) {
+    $workCategoryCustomField = \Civi\Api4\CustomField::get()
+      ->addWhere('name', '=', 'Work_Category')
+      ->addWhere('custom_group_id', '=', $customGroupId)
+      ->execute()
+      ->first();
+    if (empty($workCategoryCustomField)) {
+      $workCategoryCustomField = \Civi\Api4\CustomField::create()
+        ->addValue('custom_group_id', $customGroupId)
+        ->addValue('name', 'Work_Category')
+        ->addValue('label', 'Work Category')
+        ->addValue('data_type', 'Int')
+        ->addValue('html_type', 'Select')
+        ->addValue('option_group_id', $workCategoryoptionGroupId)
+        ->addValue('is_view', TRUE)
+        ->addValue('is_searchable', TRUE)
+        ->execute();
+    }
+
+    $trackingNumberCustomeField = \Civi\Api4\CustomField::get()
+      ->addWhere('name', '=', 'Tracking_Number')
+      ->addWhere('custom_group_id', '=', $customGroupId)
+      ->execute()
+      ->first();
+    if (empty($trackingNumberCustomeField)) {
+      $trackingNumberCustomeField = \Civi\Api4\CustomField::create()
+        ->addValue('custom_group_id', $customGroupId)
+        ->addValue('name', 'Tracking_Number')
+        ->addValue('label', 'Tracking Number')
+        ->addValue('data_type', 'String')
+        ->addValue('html_type', 'Text')
+        ->addValue('is_view', TRUE)
+        ->addValue('is_searchable', TRUE)
+        ->execute();
+    }
+  }
 }
