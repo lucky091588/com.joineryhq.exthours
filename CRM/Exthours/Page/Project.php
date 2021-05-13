@@ -126,6 +126,7 @@ class CRM_Exthours_Page_Project extends CRM_Core_Page {
       );
     }
 
+    $projects = CRM_Utils_Array::crmArraySortByField($projects, 'name');
     $this->assign('rows', $projects);
   }
 
