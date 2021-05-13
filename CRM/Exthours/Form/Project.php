@@ -25,24 +25,21 @@ class CRM_Exthours_Form_Project extends CRM_Core_Form {
   }
 
   public function buildQuickForm() {
-    $projects = [];
+    $projectOptions = [];
 
     // Fetch Kimai Projects
     $kimaiProjects = CRM_Exthours_Kimai_Utils::getKimaiProjects();
     foreach ($kimaiProjects['items'] as $kimaiProject) {
-      $projects[$kimaiProject['projectID']]['id'] = $kimaiProject['projectID'];
-      $projects[$kimaiProject['projectID']]['text'] = $kimaiProject['name'];
+      $isUsed = \Civi\Api4\ProjectContact::get()
+        ->addWhere('external_id', '=', $kimaiProject['projectID'])
+        ->execute()
+        ->count();
+      if (!$isUsed) {
+        $projectOptions[$kimaiProject['projectID']] = $kimaiProject['name'];
+      }
     }
-    sort($projects);
-
-    $this->add('text',
-      'kimai_project_id',
-      E::ts('Kimai Projects'),
-      [
-        'class' => 'crm-projects-selector big',
-      ],
-      TRUE
-    );
+    $projectOptions = CRM_Utils_Array::asort($projectOptions);
+    $this->add('select', 'kimai_project_id', E::ts('Kimai Project'), $projectOptions, true, ['placeholder' => E::ts('Select'), 'class' => 'crm-select2 huge']);
 
     // Fetch Contact Organization API using addEntityRef
     $entityRefParams = [
@@ -56,17 +53,20 @@ class CRM_Exthours_Form_Project extends CRM_Core_Form {
 
     $this->addButtons(array(
       array(
+        'type' => 'next',
+        'name' => ts('Save and New'),
+        'subName' => 'new',
+        'isDefault' => TRUE,
+      ),
+      array(
         'type' => 'submit',
         'name' => E::ts('Save'),
-        'isDefault' => TRUE,
       ),
       array(
         'type' => 'cancel',
         'name' => E::ts('Cancel'),
       ),
     ));
-
-    $this->assign('kimaiProjects', $projects);
 
     parent::buildQuickForm();
   }
@@ -145,6 +145,18 @@ class CRM_Exthours_Form_Project extends CRM_Core_Form {
         ->execute();
 
       CRM_Core_Session::setStatus(E::ts('A new project has been integrated!'), E::ts('Kimai Integration: Project'), 'success');
+    }
+
+    $buttonName = $this->controller->getButtonName();
+    $session = CRM_Core_Session::singleton();
+    if ($buttonName == $this->getButtonName('next', 'new')) {
+      $session->setStatus(ts('You can add another project.'), '', 'info');
+      $session->replaceUserContext(
+        CRM_Utils_System::url(
+          'civicrm/admin/exthours/project',
+          'reset=1&action=add'
+        )
+      );
     }
 
     parent::postProcess();

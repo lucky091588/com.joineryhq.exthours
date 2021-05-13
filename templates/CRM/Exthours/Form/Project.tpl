@@ -13,19 +13,3 @@
   <div class="crm-submit-buttons">{include file="CRM/common/formButtons.tpl" location="bottom"}</div>
 </div>
 
-<script type="text/javascript">
-  cj('form.{$form.formClass}').data('kimaiProjects', {$kimaiProjects|@json_encode});
-
-  {literal}
-    CRM.$(function($) {
-      var form = $('form.{/literal}{$form.formClass}{literal}');
-
-      $('input.crm-projects-selector', form)
-        .addClass('crm-action-menu fa-code')
-        .crmSelect2({
-          data: form.data('kimaiProjects'),
-          placeholder: '{/literal}{ts escape='js'}Select Project{/ts}{literal}'
-        });
-    });
-  {/literal}
-</script>
