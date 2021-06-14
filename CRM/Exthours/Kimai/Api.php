@@ -16,7 +16,7 @@ class CRM_Exthours_Kimai_Api {
    * @param string $method HTTP verb: GET, POST, etc.
    * @return array
    */
-  public function request($body = array(), $method = 'POST', $pathCall = 'core/json.php') {
+  public static function request($body = array(), $method = 'POST', $pathCall = 'core/json.php') {
 
     $path = Civi::settings()->get('exthours_kimai_url');
 
