@@ -68,6 +68,12 @@ class CRM_Exthours_Upgrader extends CRM_Exthours_Upgrader_Base {
       ->addWhere('label', '=', 'Tracking Number')
       ->execute();
 
+    // Delete all related custom field
+    $cleanCustomField = \Civi\Api4\CustomField::delete()
+      ->setCheckPermissions(FALSE)
+      ->addWhere('label', '=', 'Is Invoiced?')
+      ->execute();
+
     // Get all related custom group
     $getCustomServiceHours = \Civi\Api4\CustomGroup::get()
       ->setCheckPermissions(FALSE)
@@ -84,6 +90,31 @@ class CRM_Exthours_Upgrader extends CRM_Exthours_Upgrader_Base {
     CRM_Core_DAO::executeQuery("DROP TABLE IF EXISTS {$getCustomServiceHours['table_name']}");
 
     // $this->executeSqlFile('sql/myuninstall.sql');
+  }
+
+  public function upgrade_1001() {
+    $this->ctx->log->info('Applying update 1001 (Create Is Invoiced Custom Field)');
+
+    try {
+      $serviceHoursDetailsCustomGroup = \Civi\Api4\CustomGroup::get()
+        ->addWhere('name', '=', 'Service_Hours_Details')
+        ->addWhere('extends', '=', 'Activity')
+        ->execute()
+        ->first();
+
+      $isInvoicedCustomeField = \Civi\Api4\CustomField::create()
+        ->addValue('custom_group_id', $serviceHoursDetailsCustomGroup['id'])
+        ->addValue('name', 'Is_Invoiced')
+        ->addValue('label', 'Is Invoiced?')
+        ->addValue('data_type', 'Boolean')
+        ->addValue('html_type', 'Radio')
+        ->addValue('is_view', TRUE)
+        ->addValue('is_searchable', TRUE)
+        ->execute();
+    } catch (API_Exception $e) {
+    }
+
+    return TRUE;
   }
 
   /**

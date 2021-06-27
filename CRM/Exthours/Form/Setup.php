@@ -89,7 +89,7 @@ class CRM_Exthours_Form_Setup extends CRM_Core_Form {
     // Create custom group for the Service Hours Details
     // Extend as Activity with column value as exthours_servicehours value
 
-    $serviceHoursDetailsCustomGroup = $this->_createIfNotExistsAndGetServiceHoursDetailsCustomGroup();
+    $serviceHoursDetailsCustomGroup = $this->_createIfNotExistsAndGetServiceHoursDetailsCustomGroup($serviceHoursOptionValue['value']);
 
     // Create -- if not exists -- custom fields for the Service Hours Details custom group
     $this->_createIfNotExistServiceHoursDetailsCustomFields($serviceHoursDetailsCustomGroup['id'], $workCategoryOptionGroup['id']);
@@ -120,9 +120,11 @@ class CRM_Exthours_Form_Setup extends CRM_Core_Form {
    * Get the Service Hours Details custom group object via api; if it doesn't
    * exist, create it first.
    *
+   * @param $extendColumnValue extend column value of the service hours details custom group
+   *
    * @return Object CiviCRM api4 custom group object.
    */
-  private function _createIfNotExistsAndGetServiceHoursDetailsCustomGroup() {
+  private function _createIfNotExistsAndGetServiceHoursDetailsCustomGroup($extendColumnValue) {
     $serviceHoursDetailsCustomGroup = \Civi\Api4\CustomGroup::get()
       ->addWhere('name', '=', 'Service_Hours_Details')
       ->addWhere('extends', '=', 'Activity')
@@ -137,7 +139,7 @@ class CRM_Exthours_Form_Setup extends CRM_Core_Form {
         ->addValue('collapse_display', FALSE)
         ->addValue('style:name', 'Inline')
         ->addValue('extends_entity_column_value', [
-            $serviceHoursOptionValue['value'],
+            $extendColumnValue,
           ])
         ->execute()
         ->first();
@@ -183,6 +185,23 @@ class CRM_Exthours_Form_Setup extends CRM_Core_Form {
         ->addValue('label', 'Tracking Number')
         ->addValue('data_type', 'String')
         ->addValue('html_type', 'Text')
+        ->addValue('is_view', TRUE)
+        ->addValue('is_searchable', TRUE)
+        ->execute();
+    }
+
+    $isInvoicedCustomeField = \Civi\Api4\CustomField::get()
+      ->addWhere('name', '=', 'Is_Invoiced')
+      ->addWhere('custom_group_id', '=', $customGroupId)
+      ->execute()
+      ->first();
+    if (empty($isInvoicedCustomeField)) {
+      $isInvoicedCustomeField = \Civi\Api4\CustomField::create()
+        ->addValue('custom_group_id', $customGroupId)
+        ->addValue('name', 'Is_Invoiced')
+        ->addValue('label', 'Is Invoiced?')
+        ->addValue('data_type', 'Boolean')
+        ->addValue('html_type', 'Radio')
         ->addValue('is_view', TRUE)
         ->addValue('is_searchable', TRUE)
         ->execute();
