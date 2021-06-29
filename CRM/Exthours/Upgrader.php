@@ -65,13 +65,13 @@ class CRM_Exthours_Upgrader extends CRM_Exthours_Upgrader_Base {
     // Delete all related custom field
     $cleanCustomField = \Civi\Api4\CustomField::delete()
       ->setCheckPermissions(FALSE)
-      ->addWhere('label', '=', 'Tracking Number')
+      ->addWhere('name', '=', 'Tracking_Number')
       ->execute();
 
     // Delete all related custom field
     $cleanCustomField = \Civi\Api4\CustomField::delete()
       ->setCheckPermissions(FALSE)
-      ->addWhere('label', '=', 'Is Invoiced?')
+      ->addWhere('name', '=', 'Is_Invoiced')
       ->execute();
 
     // Get all related custom group
