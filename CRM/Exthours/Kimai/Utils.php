@@ -347,7 +347,7 @@ class CRM_Exthours_Kimai_Utils {
     ]);
 
     // Init trackingNumberValue and IsInvoicedValue
-    $trackingNumberVal = '';
+    $trackingNumberVal = ' ';
     $isInvoicedVal = 0;
 
     // If customFields['tracking_number'] is not empty, update...
