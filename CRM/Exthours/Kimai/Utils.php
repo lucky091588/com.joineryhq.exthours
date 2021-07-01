@@ -340,7 +340,7 @@ class CRM_Exthours_Kimai_Utils {
     ]);
 
     // Add empty space string if trackingNumberVal is empty
-    $trackingNumberVal = !empty($customFields['tracking_number']) ? $customFields['tracking_number'] : ' ';
+    $trackingNumberVal = !empty($customFields['tracking_number']) ? $customFields['tracking_number'] : NULL;
 
     // Insert/Update tracking number
     $createTrackingNumber = civicrm_api3('CustomValue', 'create', [
