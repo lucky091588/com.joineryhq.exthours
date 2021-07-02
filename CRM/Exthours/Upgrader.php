@@ -97,12 +97,14 @@ class CRM_Exthours_Upgrader extends CRM_Exthours_Upgrader_Base {
 
     try {
       $serviceHoursDetailsCustomGroup = \Civi\Api4\CustomGroup::get()
+        ->setCheckPermissions(FALSE)
         ->addWhere('name', '=', 'Service_Hours_Details')
         ->addWhere('extends', '=', 'Activity')
         ->execute()
         ->first();
 
       $isInvoicedCustomeField = \Civi\Api4\CustomField::create()
+        ->setCheckPermissions(FALSE)
         ->addValue('custom_group_id', $serviceHoursDetailsCustomGroup['id'])
         ->addValue('name', 'Is_Invoiced')
         ->addValue('label', 'Is Invoiced?')
