@@ -331,7 +331,7 @@ class CRM_Exthours_Kimai_Utils {
       ->execute()
       ->first();
 
-    // Get column name of tracking number custom field
+    // Get column name of is invoiced custom field
     $isInvoiced = \Civi\Api4\CustomField::get()
       ->setCheckPermissions(FALSE)
       ->addWhere('label', '=', 'Is Invoiced?')
@@ -347,7 +347,7 @@ class CRM_Exthours_Kimai_Utils {
     ]);
 
     // Init trackingNumberValue and IsInvoicedValue
-    $trackingNumberVal = ' ';
+    $trackingNumberVal = NULL;
     $isInvoicedVal = 0;
 
     // If customFields['tracking_number'] is not empty, update...
